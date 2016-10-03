@@ -1,15 +1,15 @@
 var React = require('react');
 var actions = require('./actions/actions');
 var connect = require('react-redux').connect;
+var Form = require('react-router-form');
 
 var Search = React.createClass({
     Search: function(event) {
         event.preventDefault();
-        console.log(this);
         var keyword = this.refs.search.value.trim();
-        if(keyword === '') keyword = 'the most viewed video';
         this.refs.search.value = '';
         this.props.dispatch(actions.searchVideos(keyword));
+        if(keyword === '') keyword = 'the most viewed video';
     },
     playVideo: function(event) {
         event.preventDefault();
@@ -21,13 +21,13 @@ var Search = React.createClass({
     render: function() {
         return (
             <div>
-                <form onSubmit={this.Search}>
+                <Form to={'/search/' + this.props.keyword} method="POST" onSubmit={this.Search}>
                     <label>Search in youtube top 10 viewed videos</label><br />
                     <input type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' />
                     <button type="submit">
                         go
                     </button>
-                </form>
+                </Form>
                 <Results list={this.props.list} keyword={this.props.keyword} 
                          index={this.props.index} onClick={this.playVideo}/>
             </div>
@@ -90,7 +90,7 @@ var Results = function(props) {
 };
 
 var PlayVideo = function(props) {
-    var url = "https://www.youtube.com/embed/" + props.videoId + "?enablejsapi=1";
+    var url = "http://www.youtube.com/embed/" + props.videoId + "?enablejsapi=1";
     return (
         <iframe className="player" type="text/html" width="640" height="390"
           src={url} frameBorder="0"></iframe>

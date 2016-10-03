@@ -14,7 +14,11 @@ var hashHistory = router.hashHistory;
 document.addEventListener('DOMContentLoaded', function() {
     ReactDOM.render(
         <Provider store={store}>
-            <Container />    
+            <Router history={hashHistory}>
+                <Route path="/" component={Container}>
+                    <Route path="search/:keyword" component={Results} />
+                </Route>
+            </Router>
         </Provider>,
         document.getElementById('app')
     );
