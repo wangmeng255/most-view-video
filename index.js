@@ -3,7 +3,7 @@ var ReactDOM = require('react-dom');
 var Provider = require('react-redux').Provider;
 
 var store = require('./store');
-var search = require('./search');
+var search = require('./components/search');
 var Container = search.Container;
 var Results = search.Results;
 var router = require('react-router');
