@@ -41,7 +41,6 @@ var searchVideos = function(keyword) {
     else url += 'part=snippet&maxResults=10&order=viewCount&q=' + 
                  keyword + 
                 '&type=video&key=AIzaSyD5l0YZstcpguzjY7MMCG3UywVRXQEm5DA';
-    if(keyword === '') keyword = 'the most viewed video';
     return function(dispatch) {
         return fetch(url).then(function(response) {
             if (response.status < 200 || response.status >= 300) {

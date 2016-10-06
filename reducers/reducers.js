@@ -25,15 +25,10 @@ var searchReducer = function(state, action) {
         return Object.assign({}, state, {
             index: state.index.concat(action.index)
         });
-    } if(action.type === actions.CLOSE_VIDEO) {
-        for(var i = 0; i < state.index.length; i++) {
-            if(action.index === state.index[i]) {
-                var temp = new Array(state.index.splice(action.index, 1));
-                return Object.assign({}, state, {
-                    index: temp
-                });
-            }
-        }
+    } else if(action.type === actions.CLOSE_VIDEO) {
+        return Object.assign({}, state, {index: state.index.filter((value) => {
+            return value !== action.index
+        })});
     }
     return state;
 };

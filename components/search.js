@@ -1,7 +1,6 @@
 var React = require('react');
 var actions = require('../actions/actions');
 var connect = require('react-redux').connect;
-var Form = require('react-router-form');
 
 var Search = React.createClass({
     Search: function(event) {
@@ -9,7 +8,6 @@ var Search = React.createClass({
         var keyword = this.refs.search.value.trim();
         this.refs.search.value = '';
         this.props.dispatch(actions.searchVideos(keyword));
-        if(keyword === '') keyword = 'the most viewed video';
     },
     playVideo: function(event) {
         event.preventDefault();
@@ -19,17 +17,24 @@ var Search = React.createClass({
         else this.props.dispatch(actions.closeVideo(index));
     },
     render: function() {
+        var results = <Results list={this.props.list} keyword={this.props.keyword} 
+                               index={this.props.index} onClick={this.playVideo}/>;
+        if(this.props.error) results = <p>{this.props.error}</p>;
         return (
             <div>
-                <Form to={'/search/' + this.props.keyword} method="POST" onSubmit={this.Search}>
-                    <label>Search in youtube top 10 viewed videos</label><br />
-                    <input type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' />
-                    <button type="submit">
+                <h2>
+                    <img id="logo" src="/images/YouTube-logo-full_color.png" 
+                     alt={"YouTube Logo"} 
+                     title={"YouTube Logo"} />
+                     Top 10 Viewed Videos
+                </h2>
+                <form onSubmit={this.Search}>
+                    <input id="search" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' />
+                    <button id="go" type="submit">
                         go
                     </button>
-                </Form>
-                <Results list={this.props.list} keyword={this.props.keyword} 
-                         index={this.props.index} onClick={this.playVideo}/>
+                </form>
+                {results}
             </div>
         );
     }
@@ -37,42 +42,22 @@ var Search = React.createClass({
 
 var Results = function(props) {
     var resultList = [];
-    var j = 0;
     for(var i = 0; i < props.list.length; i++) {
-        if(props.index[j] === i) {
+        if(props.index.indexOf(i) !== -1) {
             var player = <PlayVideo videoId={props.list[i].id.videoId} />;
-            j++;
             resultList.push(
                 <li key={i}>
-                    <img src={props.list[i].snippet.thumbnails.default.url} 
-                         alt={props.list[i].snippet.title} 
-                         width={props.list[i].snippet.thumbnails.default.width} 
-                         height={props.list[i].snippet.thumbnails.default.height} 
-                         title={props.list[i].snippet.title} />
-                    <h4>{props.list[i].snippet.title}</h4>
-                    <p>{props.list[i].snippet.description}</p>
-                    <a href="#" onClick={props.onClick}>
-                        Close
-                    </a>
+                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"Close"}/>
                     <div className="player">
                         {player}
                     </div>
-                </li> 
+                </li>
             );
         }
         else {
             resultList.push(
                 <li key={i}>
-                    <img src={props.list[i].snippet.thumbnails.default.url} 
-                         alt={props.list[i].snippet.title} 
-                         width={props.list[i].snippet.thumbnails.default.width} 
-                         height={props.list[i].snippet.thumbnails.default.height} 
-                         title={props.list[i].snippet.title} />
-                    <h4>{props.list[i].snippet.title}</h4>
-                    <p>{props.list[i].snippet.description}</p>
-                    <a href="#" onClick={props.onClick}>
-                        View
-                    </a>
+                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"View"}/>
                     <div className="player">
                     </div>
                 </li> 
@@ -80,7 +65,10 @@ var Results = function(props) {
         }
         
     }
-    if(resultList.length) var resultHeader = <h3>Results for "{props.keyword}"</h3>;
+    var resultHeader;
+    if(props.list.length) 
+        if(!props.keyword) resultHeader = <h3>{"Most viewed videos"}</h3>;
+        else  resultHeader = <h3>Results for "{props.keyword}"</h3>;
     return (
         <ul>
             {resultHeader}
@@ -89,8 +77,35 @@ var Results = function(props) {
     );
 };
 
+var Snippet = function(props) {
+    return (
+        <div className="video-info">
+            <img src={props.snippet.thumbnails.default.url} 
+                 alt={props.snippet.title} 
+                 width={props.snippet.thumbnails.default.width} 
+                 height={props.snippet.thumbnails.default.height} 
+                 title={props.snippet.title} />
+            <div>
+                <h4>{props.snippet.title}</h4>
+                <p>{props.snippet.description}</p>
+                <div>
+                    <span>published by </span>
+                    <a className="channel-id" href={"https://www.youtube.com/channel/" + props.snippet.channelId} target="_blank">
+                        {props.snippet.channelTitle}
+                    </a>
+                    <span> in </span>
+                    <span className="publish-date-time">{props.snippet.publishedAt.split("T")[0]}</span>
+                    <a href="#" onClick={props.onClick}>
+                        {props.anchorText}
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 var PlayVideo = function(props) {
-    var url = "http://www.youtube.com/embed/" + props.videoId + "?enablejsapi=1";
+    var url = "//www.youtube.com/embed/" + props.videoId + "?enablejsapi=1";
     return (
         <iframe className="player" type="text/html" width="640" height="390"
           src={url} frameBorder="0"></iframe>
@@ -101,7 +116,8 @@ var mapStateToProps = function(state, props) {
     return {
         keyword: state.keyword,
         list: state.list,
-        index: state.index
+        index: state.index,
+        error: state.error
     };
 };
 
