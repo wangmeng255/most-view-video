@@ -47,7 +47,7 @@ var Results = function(props) {
             var player = <PlayVideo videoId={props.list[i].id.videoId} />;
             resultList.push(
                 <li key={i}>
-                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"Close"}/>
+                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"Close"} videoId={props.list[i].id.videoId}/>
                     <div className="player">
                         {player}
                     </div>
@@ -57,7 +57,7 @@ var Results = function(props) {
         else {
             resultList.push(
                 <li key={i}>
-                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"View"}/>
+                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"View"} videoId={props.list[i].id.videoId}/>
                     <div className="player">
                     </div>
                 </li> 
@@ -86,7 +86,7 @@ var Snippet = function(props) {
                  height={props.snippet.thumbnails.default.height} 
                  title={props.snippet.title} />
             <div>
-                <h4>{props.snippet.title}</h4>
+                <h4><a href={"https://www.youtube.com/watch?v=" + props.videoId} target="_blank">{props.snippet.title}</a></h4>
                 <p>{props.snippet.description}</p>
                 <div>
                     <span>published by </span>
