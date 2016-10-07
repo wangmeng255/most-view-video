@@ -7,7 +7,9 @@ var Search = React.createClass({
         event.preventDefault();
         var keyword = this.refs.search.value.trim();
         this.refs.search.value = '';
-        this.props.dispatch(actions.searchVideos(keyword));
+        var after = this.refs.after.value;
+        var before = this.refs.before.value;
+        this.props.dispatch(actions.searchVideos(keyword, after, before));
     },
     playVideo: function(event) {
         event.preventDefault();
@@ -18,8 +20,14 @@ var Search = React.createClass({
     },
     render: function() {
         var results = <Results list={this.props.list} keyword={this.props.keyword} 
-                               index={this.props.index} onClick={this.playVideo}/>;
+                               index={this.props.index} onClick={this.playVideo}
+                               after={this.props.after} before={this.props.before} />;
         if(this.props.error) results = <p>{this.props.error}</p>;
+        var now = new Date;
+        var month = String(now.getUTCMonth() + 1);
+        if(month.length < 2) month = '0' + month;
+        var day = String(now.getUTCDate());
+        if(day.length < 2) day = '0' + day;
         return (
             <div>
                 <h2>
@@ -29,10 +37,16 @@ var Search = React.createClass({
                      Top 10 Viewed Videos
                 </h2>
                 <form onSubmit={this.Search}>
-                    <input id="search" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' />
-                    <button id="go" type="submit">
-                        go
-                    </button>
+                    <input id="keyword" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' />
+                    <div>
+                        <label htmlFor="after"> After (UTC Time): </label>
+                        <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} />
+                        <label htmlFor="before">Before (UTC Time): </label>
+                        <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} />
+                        <button id="go" type="submit">
+                            go
+                        </button>
+                    </div>
                 </form>
                 {results}
             </div>
@@ -47,7 +61,8 @@ var Results = function(props) {
             var player = <PlayVideo videoId={props.list[i].id.videoId} />;
             resultList.push(
                 <li key={i}>
-                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"Close"} videoId={props.list[i].id.videoId}/>
+                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"Close"} 
+                             videoId={props.list[i].id.videoId}/>
                     <div className="player">
                         {player}
                     </div>
@@ -57,7 +72,8 @@ var Results = function(props) {
         else {
             resultList.push(
                 <li key={i}>
-                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"View"} videoId={props.list[i].id.videoId}/>
+                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"View"} 
+                             videoId={props.list[i].id.videoId}/>
                     <div className="player">
                     </div>
                 </li> 
@@ -65,10 +81,16 @@ var Results = function(props) {
         }
         
     }
+    var header = '';
     var resultHeader;
-    if(props.list.length) 
-        if(!props.keyword) resultHeader = <h3>{"Most viewed videos"}</h3>;
-        else  resultHeader = <h3>Results for "{props.keyword}"</h3>;
+    if(props.list.length) {
+        if(!props.keyword) header = 'Most viewed videos ';
+        else  header = '"' + props.keyword + '"';
+        
+        if(props.after) header = header + ' after ' + props.after;
+        if(props.before) header = header + ' before ' + props.before;
+        resultHeader = <h3>Results for {header}</h3>;
+    }
     return (
         <ul>
             {resultHeader}
@@ -115,6 +137,8 @@ var PlayVideo = function(props) {
 var mapStateToProps = function(state, props) {
     return {
         keyword: state.keyword,
+        after: state.after,
+        before: state.before,
         list: state.list,
         index: state.index,
         error: state.error
