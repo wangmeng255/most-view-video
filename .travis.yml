@@ -1,2 +1,9 @@
 language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: glTs/drS2zl0YSGccq5fNhzQ1imhna3X5swmXd4aTeX106hU3TwNHP28mT1Jp+mGA2tgfbOk+IS+fB6dkgV93D5V7csv7gYZoq5KXHfS4bQoaQmnLUY7SHdTQsz5r6cs+MbGOHvl+FI8LfdswJuJetMEqxLh4Lelzp1bz0aO02+IR0dXvbCuIJ2gPw+w2hb6dIqgAELOlB3S/6Zlzam2Yjx98dl8DqlUG//0170sktiRcVeKhSfxDJT2OAtgpRkIwwTibVg95N0vL+xaSyaQxyf4tc/M0gpScdG/dAHrM7stLsa/0W0UEjEUymLisVgnwihWeJIKY0Y2JyP/tk/3IRI8zmzc7qDFbASikTw+zOkWaPmsD3VqHVZXM2DUSoURJD/fERA0eMfJl51haRcSeatvOWbJj2MC8WKD15VZsRqymr6/NAxUNUiCKbf3NZLQ/23pOhU2K+PRBfDXMTBulxJhv4VoQg95CAWnBKjEJKI1qk2pzyoFw0a11oRcYaeto5rsqvaGhbLLMgVKguzQ/NjTUMt/sQhKI2b1n/jVmAT2HnUztyCYzjugPuA3EbZ9ASck3aJfl2FuCegJzEU2rB6lrcDhXSpHZhwCRkIA/6IAV7mdysQhY9LG+G/wjKGwcSvpV4hLRGddvDkFp26mB3WTBfa/gj671nBAd3oOhs8=
+  app: evening-ocean-88484
+  on:
+    repo: wangmeng255/most-view-video
