@@ -21,7 +21,8 @@ var Search = React.createClass({
     render: function() {
         var results = <Results list={this.props.list} keyword={this.props.keyword} 
                                index={this.props.index} onClick={this.playVideo}
-                               after={this.props.after} before={this.props.before} />;
+                               after={this.props.after} before={this.props.before} 
+                               error={this.props.error} />;
         if(this.props.error) results = <p>{this.props.error}</p>;
         var now = new Date;
         var month = String(now.getUTCMonth() + 1);
@@ -90,6 +91,14 @@ var Results = function(props) {
         if(props.after) header = header + ' after ' + props.after;
         if(props.before) header = header + ' before ' + props.before;
         resultHeader = <h3>Results for {header}</h3>;
+    }
+    if(props.error) {
+        return(
+            <div>
+                <h3>Oh, we have got error Code: {props.error.code}</h3>
+                <p>{props.error.message}</p>
+            </div>
+        );
     }
     return (
         <ul>
