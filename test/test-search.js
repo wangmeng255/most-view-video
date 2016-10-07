@@ -364,9 +364,8 @@ describe('Search component', function() {
         
         var h3 = result.props.children[0];
         h3.type.should.equal('h3');
-        h3.props.children[0].should.equal('Results for "');
-        h3.props.children[1].should.equal('dogs');
-        h3.props.children[2].should.equal('"');
+        h3.props.children[0].should.equal('Results for ');
+        h3.props.children[1].should.equal('"dogs"');
         
         for(var i = 0; i < items.length; i++) {
             var li = result.props.children[1][i];
