@@ -23824,7 +23824,7 @@
 	            React.createElement(
 	                'h2',
 	                null,
-	                React.createElement('img', { id: 'logo', src: '/img/YouTube-logo-full_color.png',
+	                React.createElement('img', { id: 'logo', src: 'YouTube-logo-full_color.png',
 	                    alt: "YouTube Logo",
 	                    title: "YouTube Logo" }),
 	                'Top 10 Viewed Videos'
