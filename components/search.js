@@ -32,7 +32,7 @@ var Search = React.createClass({
         return (
             <div>
                 <h2>
-                    <img id="logo" src="/images/YouTube-logo-full_color.png" 
+                    <img id="logo" src="/img/YouTube-logo-full_color.png" 
                      alt={"YouTube Logo"} 
                      title={"YouTube Logo"} />
                      Top 10 Viewed Videos
