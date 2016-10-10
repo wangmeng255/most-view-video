@@ -330,7 +330,14 @@ var items = [
                }
               }
             ];
-
+var errorResponse = {
+    response: {
+        bodyUsed:false,
+        status: 400,
+        type: "cors",
+        url: "https://www.googleapis.com/youtube/v3/search?"
+    }
+};
 var React = require('react');
 var Provider = require('react-redux').Provider;
 var TestUtils = require('react-addons-test-utils');
@@ -351,14 +358,15 @@ describe('Search component', function() {
         result.type.displayName.should.equal('Connect(Search)');
     }),
     
-    it('Renders the Results', function() {
+    it('Renders the Results when get data successfully', function() {
         var list = items;
         var keyword = "dogs";
         var index = [0, 1];
         var onClick = function() {};
+        var error = null;
         
         var renderer = TestUtils.createRenderer();
-        renderer.render(<Results list={list} keyword={keyword} index={index} onClick={onClick} />);
+        renderer.render(<Results list={list} keyword={keyword} index={index} onClick={onClick} error={error} />);
         var result = renderer.getRenderOutput();
         result.type.should.equal('ul');
         
@@ -379,5 +387,33 @@ describe('Search component', function() {
             li.props.children[1].type.should.equal('div');
             li.props.children[1].props.className.should.equal('player');
         }
+    }),
+    it('Renders the Results when get error', function() {
+        var error = errorResponse;
+        var keyword = "dogs";
+        var index = [];
+        var list = [];
+        var onClick = function() {};
+        
+        var renderer = TestUtils.createRenderer();
+        renderer.render(<Results list={list} error={error} keyword={keyword} index={index} onClick={onClick} />);
+        var result = renderer.getRenderOutput();
+        
+        result.type.should.equal('div');
+        result.props.id.should.equal('error');
+        
+        var h3 = result.props.children[0];
+        h3.type.should.equal('h3');
+        h3.props.children[0].should.equal('Oh, we have got error Code: "');
+        h3.props.children[1].should.equal(error.response.status);
+        h3.props.children[2].should.equal('"');
+        
+        var p = result.props.children[1];
+        p.props.children[0].should.equal('Error at ');
+        p.props.children[1].type.should.equal('a');
+        p.props.children[1].props.href.should.equal(error.response.url);
+        p.props.children[2].should.equal(' Type is "');
+        p.props.children[3].type.should.equal('strong');
+        p.props.children[3].props.children.should.equal(error.response.type);
     });
 });

@@ -19,11 +19,12 @@ var Search = React.createClass({
         else this.props.dispatch(actions.closeVideo(index));
     },
     render: function() {
-        var results = <Results list={this.props.list} keyword={this.props.keyword} 
+        var results;
+        if(this.props.error) results = <p>{this.props.error}</p>;
+        results = <Results list={this.props.list} keyword={this.props.keyword} 
                                index={this.props.index} onClick={this.playVideo}
                                after={this.props.after} before={this.props.before} 
                                error={this.props.error} />;
-        if(this.props.error) results = <p>{this.props.error}</p>;
         var now = new Date;
         var month = String(now.getUTCMonth() + 1);
         if(month.length < 2) month = '0' + month;
@@ -56,6 +57,14 @@ var Search = React.createClass({
 });
 
 var Results = function(props) {
+    if(props.error) {
+        return(
+            <div id="error">
+                <h3>Oh, we have got error Code: "{props.error.response.status}"</h3>
+                <p>Error at <a href={props.error.response.url}>{props.error.response.url}</a> Type is "<strong>{props.error.response.type}</strong>"</p>
+            </div>
+        );
+    }
     var resultList = [];
     for(var i = 0; i < props.list.length; i++) {
         if(props.index.indexOf(i) !== -1) {
@@ -91,14 +100,6 @@ var Results = function(props) {
         if(props.after) header = header + ' after ' + props.after;
         if(props.before) header = header + ' before ' + props.before;
         resultHeader = <h3>Results for {header}</h3>;
-    }
-    if(props.error) {
-        return(
-            <div>
-                <h3>Oh, we have got error Code: {props.error.code}</h3>
-                <p>{props.error.message}</p>
-            </div>
-        );
     }
     return (
         <ul>
