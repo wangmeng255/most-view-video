@@ -6,7 +6,6 @@ var Search = React.createClass({
     Search: function(event) {
         event.preventDefault();
         var keyword = this.refs.search.value.trim();
-        this.refs.search.value = '';
         var after = this.refs.after.value;
         var before = this.refs.before.value;
         this.props.dispatch(actions.searchVideos(keyword, after, before));
@@ -38,16 +37,13 @@ var Search = React.createClass({
                      title={"YouTube Logo"} />
                      Top 10 Viewed Videos
                 </h2>
-                <form onSubmit={this.Search}>
-                    <input id="keyword" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' />
+                <form>
+                    <input id="keyword" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' onChange={this.Search}/>
                     <div>
                         <label htmlFor="after"> After (UTC Time): </label>
-                        <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} />
+                        <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search} />
                         <label htmlFor="before">Before (UTC Time): </label>
-                        <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} />
-                        <button id="go" type="submit">
-                            go
-                        </button>
+                        <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search}/>
                     </div>
                 </form>
                 {results}
