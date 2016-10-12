@@ -23804,16 +23804,14 @@
 	        if (isView) this.props.dispatch(actions.playVideo(index));else this.props.dispatch(actions.closeVideo(index));
 	    },
 	    render: function render() {
-	        var results;
+	        var results = React.createElement(Results, { list: this.props.list, keyword: this.props.keyword,
+	            index: this.props.index, onClick: this.playVideo,
+	            after: this.props.after, before: this.props.before });
 	        if (this.props.error) results = React.createElement(
 	            'p',
 	            null,
 	            this.props.error
 	        );
-	        results = React.createElement(Results, { list: this.props.list, keyword: this.props.keyword,
-	            index: this.props.index, onClick: this.playVideo,
-	            after: this.props.after, before: this.props.before,
-	            error: this.props.error });
 	        var now = new Date();
 	        var month = String(now.getUTCMonth() + 1);
 	        if (month.length < 2) month = '0' + month;
@@ -23862,36 +23860,6 @@
 	});
 	
 	var Results = function Results(props) {
-	    if (props.error) {
-	        return React.createElement(
-	            'div',
-	            { id: 'error' },
-	            React.createElement(
-	                'h3',
-	                null,
-	                'Oh, we have got error Code: "',
-	                props.error.response.status,
-	                '"'
-	            ),
-	            React.createElement(
-	                'p',
-	                null,
-	                'Error at ',
-	                React.createElement(
-	                    'a',
-	                    { href: props.error.response.url },
-	                    props.error.response.url
-	                ),
-	                ' Type is "',
-	                React.createElement(
-	                    'strong',
-	                    null,
-	                    props.error.response.type
-	                ),
-	                '"'
-	            )
-	        );
-	    }
 	    var resultList = [];
 	    for (var i = 0; i < props.list.length; i++) {
 	        if (props.index.indexOf(i) !== -1) {
