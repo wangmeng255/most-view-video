@@ -36,6 +36,11 @@ form div {
 #before, #after, form label {
     margin: 0;
 }
+label[for="keyword"] {
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    display: block;
+}
 ul, #error {
     margin: 0 auto;
     padding: 0;
