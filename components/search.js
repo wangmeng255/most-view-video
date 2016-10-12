@@ -58,7 +58,7 @@ var Results = function(props) {
         return (
             <div id="error">
                 <h3>Oh, we have got error Code: "{props.error.response.status}"</h3>
-                <p>Error at <a href={props.error.response.url} target="_blank">{props.error.response.url}</a> Type is "<strong>{props.error.response.type}</strong>"
+                <p>Error at <a href={props.error.response.url} target={props.error.response.url}>{props.error.response.url}</a> Type is "<strong>{props.error.response.type}</strong>"
                 </p>
             </div>
         );

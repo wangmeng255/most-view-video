@@ -23874,7 +23874,7 @@
 	                'Error at ',
 	                React.createElement(
 	                    'a',
-	                    { href: props.error.response.url, target: '_blank' },
+	                    { href: props.error.response.url, target: props.error.response.url },
 	                    props.error.response.url
 	                ),
 	                ' Type is "',
