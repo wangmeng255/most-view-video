@@ -8,7 +8,9 @@ var Search = React.createClass({
         var keyword = this.refs.search.value.trim();
         var after = this.refs.after.value;
         var before = this.refs.before.value;
-        this.props.dispatch(actions.searchVideos(keyword, after, before));
+        if(keyword) {
+            this.props.dispatch(actions.searchVideos(keyword, after, before));
+        }
     },
     playVideo: function(event) {
         event.preventDefault();
@@ -37,7 +39,7 @@ var Search = React.createClass({
                      title={"YouTube Logo"} />
                      Top 10 Viewed Videos
                 </h2>
-                <form>
+                <form onSubmit={this.Search}>
                     <label htmlFor="keyword">Search Phrase</label>
                     <input id="keyword" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' onChange={this.Search}/>
                     <div>

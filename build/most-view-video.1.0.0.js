@@ -23794,7 +23794,11 @@
 	        var keyword = this.refs.search.value.trim();
 	        var after = this.refs.after.value;
 	        var before = this.refs.before.value;
-	        this.props.dispatch(actions.searchVideos(keyword, after, before));
+	        if (keyword) {
+	            this.props.dispatch(actions.searchVideos(keyword, after, before));
+	        } else {
+	            this.props.list = [];
+	        }
 	    },
 	    playVideo: function playVideo(event) {
 	        event.preventDefault();
@@ -23827,7 +23831,7 @@
 	            ),
 	            React.createElement(
 	                'form',
-	                null,
+	                { onSubmit: this.Search },
 	                React.createElement(
 	                    'label',
 	                    { htmlFor: 'keyword' },
