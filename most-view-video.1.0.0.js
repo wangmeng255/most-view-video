@@ -23792,7 +23792,6 @@
 	    Search: function Search(event) {
 	        event.preventDefault();
 	        var keyword = this.refs.search.value.trim();
-	        this.refs.search.value = '';
 	        var after = this.refs.after.value;
 	        var before = this.refs.before.value;
 	        this.props.dispatch(actions.searchVideos(keyword, after, before));
@@ -23832,8 +23831,8 @@
 	            ),
 	            React.createElement(
 	                'form',
-	                { onSubmit: this.Search },
-	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'e.g., "dogs" or "dogs|cats"' }),
+	                null,
+	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'e.g., "dogs" or "dogs|cats"', onChange: this.Search }),
 	                React.createElement(
 	                    'div',
 	                    null,
@@ -23842,18 +23841,13 @@
 	                        { htmlFor: 'after' },
 	                        ' After (UTC Time): '
 	                    ),
-	                    React.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day }),
+	                    React.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day, onChange: this.Search }),
 	                    React.createElement(
 	                        'label',
 	                        { htmlFor: 'before' },
 	                        'Before (UTC Time): '
 	                    ),
-	                    React.createElement('input', { type: 'date', id: 'before', ref: 'before', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day }),
-	                    React.createElement(
-	                        'button',
-	                        { id: 'go', type: 'submit' },
-	                        'go'
-	                    )
+	                    React.createElement('input', { type: 'date', id: 'before', ref: 'before', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day, onChange: this.Search })
 	                )
 	            ),
 	            results
