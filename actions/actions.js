@@ -47,7 +47,7 @@ var searchVideos = function(keyword, after, before) {
     if(before) publishedBefore = '&publishedBefore=' + before + 'T00%3A00%3A00Z';
     if(keyword) q = '&q=' + keyword;
     
-    url += 'part=snippet&maxResults=10&order=viewCount' + publishedAfter + publishedBefore + q + 
+    url += 'part=snippet&maxResults=50&order=viewCount' + publishedAfter + publishedBefore + q + 
                   '&type=video&key=AIzaSyD5l0YZstcpguzjY7MMCG3UywVRXQEm5DA';
     return function(dispatch) {
         return fetch(url).then(function(response) {

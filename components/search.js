@@ -15,7 +15,7 @@ var Search = React.createClass({
     playVideo: function(event) {
         event.preventDefault();
         var isView = event.target.text === 'View'? true: false;
-        var index = $("li").index(event.target.closest("li"));
+        var index = $('li').index(event.target.closest('li'));
         if(isView) this.props.dispatch(actions.playVideo(index));
         else this.props.dispatch(actions.closeVideo(index));
     },
@@ -37,7 +37,7 @@ var Search = React.createClass({
                     <img id="logo" src="YouTube-logo-full_color.png" 
                      alt={"YouTube Logo"} 
                      title={"YouTube Logo"} />
-                     Top 10 Viewed Videos
+                     Top 50 Viewed Videos
                 </h2>
                 <form onSubmit={this.Search}>
                     <label htmlFor="keyword">Search Phrase</label>
@@ -65,49 +65,156 @@ var Results = function(props) {
             </div>
         );
     }
-    var resultList = [];
-    for(var i = 0; i < props.list.length; i++) {
-        if(props.index.indexOf(i) !== -1) {
-            var player = <PlayVideo videoId={props.list[i].id.videoId} />;
-            resultList.push(
-                <li key={i}>
-                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"Close"} 
-                             videoId={props.list[i].id.videoId}/>
-                    <div className="player">
-                        {player}
-                    </div>
-                </li>
-            );
-        }
-        else {
-            resultList.push(
-                <li key={i}>
-                    <Snippet snippet={props.list[i].snippet} onClick={props.onClick} anchorText={"View"} 
-                             videoId={props.list[i].id.videoId}/>
-                    <div className="player">
-                    </div>
-                </li> 
-            );
-        }
-        
-    }
-    var header = '';
-    var resultHeader;
-    if(props.list.length) {
-        if(!props.keyword) header = 'Most viewed videos ';
-        else  header = '"' + props.keyword + '"';
-        
-        if(props.after) header = header + ' after ' + props.after;
-        if(props.before) header = header + ' before ' + props.before;
-        resultHeader = <h3>Results for {header}</h3>;
-    }
+    
+    var chart = <Chart list={props.list} after={props.after} before={props.before} 
+                 keyword={props.keyword} onClick={props.onClick} index={props.index} />;
     return (
-        <ul>
-            {resultHeader}
-            {resultList}
-        </ul>
+        <section>
+            {chart}
+        </section>
     );
 };
+
+var Chart = React.createClass({
+    getInitialState: function() {
+        return {
+            clickedBar: null
+        };
+    },
+    filter: function(event) {
+        this.setState({
+            clickedBar: $('#q-graph tr').index($(event.target).closest('tr'))
+        });
+    },
+    render: function() {
+        //chart
+        if(!this.props.list.length) return null;
+        var timeList = [];
+        var minDate, maxDate;
+        
+        for(var i = 0; i < this.props.list.length; i++) {
+            var date = new Date(this.props.list[i].snippet.publishedAt);
+            timeList.push({i: i, milliseconds: date.getTime()});
+            if(i === 0) {minDate = date.getTime(); maxDate = date.getTime();}
+            if(minDate > date) minDate = date;
+            if(maxDate < date) maxDate = date;
+        }
+        var spanDate = (maxDate - minDate)/5;
+        
+        var value = [];
+        for(i = 0; i < 5; i++) {
+            value.push([]);
+        }
+        for(i = 0; i < timeList.length; i++) {
+            if(timeList[i].milliseconds === maxDate.getTime()) {value[4].push(timeList[i]); continue;}
+            var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
+            value[index].push(timeList[i]);
+        }
+        
+        var maxLength = 0;
+        for(i = 0; i < value.length; i++) {
+            if(maxLength < value[i].length) maxLength = value[i].length;
+        }
+        
+        var spanLength = Math.ceil(maxLength/4);
+        for(i = 0; i < value.length; i++) {
+            value[i].barHeight = {height: String(value[i].length/spanLength * 3) + 'rem'};
+            var date = new Date(spanDate * i + minDate.getTime());
+            value[i].time = date.toISOString().substring(0, date.toISOString().length - 5).replace('-', '/') + ' - ';
+            date = new Date(spanDate * (i + 1) + minDate.getTime());
+            value[i].time += date.toISOString().substring(0, date.toISOString().length - 5).replace('-', '/');
+        }
+        //header
+        var header = '';
+        var resultHeader;
+        if(this.props.list.length) {
+            if(!this.props.keyword) header = 'Most viewed videos ';
+            else  header = '"' + this.props.keyword + '"';
+            
+            if(this.props.after) header = header + ' after ' + this.props.after;
+            if(this.props.before) header = header + ' before ' + this.props.before;
+            resultHeader = <h3>Results for {header}</h3>;
+        }
+        //result
+        var resultList = [];
+        var list = [];
+        if(this.state.clickedBar !== null) {
+            for(i = 0; i < value[this.state.clickedBar].length; i++) {
+                list.push(this.props.list[value[this.state.clickedBar][i].i]);
+            }
+        }
+        else list = this.props.list;
+        
+        for(i = 0; i < list.length; i++) {
+            if(this.props.index.indexOf(i) !== -1) {
+                var player = <PlayVideo videoId={list[i].id.videoId} />;
+                resultList.push(
+                    <li key={i}>
+                        <Snippet snippet={list[i].snippet} onClick={this.props.onClick} anchorText={"Close"} 
+                                 videoId={list[i].id.videoId}/>
+                        <div className="player">
+                            {player}
+                        </div>
+                    </li>
+                );
+            }
+            else {
+                resultList.push(
+                    <li key={i}>
+                        <Snippet snippet={list[i].snippet} onClick={this.props.onClick} anchorText={"View"} 
+                                 videoId={list[i].id.videoId}/>
+                        <div className="player">
+                        </div>
+                    </li> 
+                );
+            }
+        }
+        
+        return (
+            <div>
+                <div className="chart">
+                    <table id="q-graph">
+                        <tbody>
+                            <tr className="qtr" id="q1" onClick={this.filter}>
+                                <th scope="row">{value[0].time}</th>
+                                <td className="value bar" style={value[0].barHeight}><p>{value[0].length}</p></td>
+                            </tr>
+                            <tr className="qtr" id="q2" onClick={this.filter}>
+                                <th scope="row">{value[1].time}</th>
+                                <td className="value bar" style={value[1].barHeight}><p>{value[1].length}</p></td>
+                            </tr>
+                            <tr className="qtr" id="q3" onClick={this.filter}>
+                                <th scope="row">{value[2].time}</th>
+                                <td className="value bar" style={value[2].barHeight}><p>{value[2].length}</p></td>
+                            </tr>
+                            <tr className="qtr" id="q4" onClick={this.filter}>
+                                <th scope="row">{value[3].time}</th>
+                                <td className="value bar" style={value[3].barHeight}><p>{value[3].length}</p></td>
+                            </tr>
+                            <tr className="qtr" id="q5" onClick={this.filter}>
+                                <th scope="row">{value[4].time}</th>
+                                <td className="value bar" style={value[4].barHeight}><p>{value[4].length}</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div id="ticks">
+                    <div className="tick"><p>{spanLength * 5}</p></div>
+                    <div className="tick"><p>{spanLength * 4}</p></div>
+                    <div className="tick"><p>{spanLength * 3}</p></div>
+                    <div className="tick"><p>{spanLength * 2}</p></div>
+                    <div className="tick"><p>{spanLength * 1}</p></div>
+                    <div className="tick"><p>0</p></div>
+                    </div>
+                </div>
+                <ul>
+                    {resultHeader}
+                    {resultList}
+                </ul>
+            </div>
+        );
+    }
+});
 
 var Snippet = function(props) {
     return (
