@@ -23295,7 +23295,7 @@
 	    if (before) publishedBefore = '&publishedBefore=' + before + 'T00%3A00%3A00Z';
 	    if (keyword) q = '&q=' + keyword;
 	
-	    url += 'part=snippet&maxResults=10&order=viewCount' + publishedAfter + publishedBefore + q + '&type=video&key=AIzaSyD5l0YZstcpguzjY7MMCG3UywVRXQEm5DA';
+	    url += 'part=snippet&maxResults=50&order=viewCount' + publishedAfter + publishedBefore + q + '&type=video&key=AIzaSyD5l0YZstcpguzjY7MMCG3UywVRXQEm5DA';
 	    return function (dispatch) {
 	        return fetch(url).then(function (response) {
 	            if (response.status < 200 || response.status >= 300) {
@@ -23796,14 +23796,12 @@
 	        var before = this.refs.before.value;
 	        if (keyword) {
 	            this.props.dispatch(actions.searchVideos(keyword, after, before));
-	        } else {
-	            this.props.list = [];
 	        }
 	    },
 	    playVideo: function playVideo(event) {
 	        event.preventDefault();
 	        var isView = event.target.text === 'View' ? true : false;
-	        var index = $("li").index(event.target.closest("li"));
+	        var index = $('li').index(event.target.closest('li'));
 	        if (isView) this.props.dispatch(actions.playVideo(index));else this.props.dispatch(actions.closeVideo(index));
 	    },
 	    render: function render() {
@@ -23827,7 +23825,7 @@
 	                React.createElement('img', { id: 'logo', src: 'YouTube-logo-full_color.png',
 	                    alt: "YouTube Logo",
 	                    title: "YouTube Logo" }),
-	                'Top 10 Viewed Videos'
+	                'Top 50 Viewed Videos'
 	            ),
 	            React.createElement(
 	                'form',
@@ -23891,52 +23889,292 @@
 	            )
 	        );
 	    }
-	    var resultList = [];
-	    for (var i = 0; i < props.list.length; i++) {
-	        if (props.index.indexOf(i) !== -1) {
-	            var player = React.createElement(PlayVideo, { videoId: props.list[i].id.videoId });
-	            resultList.push(React.createElement(
-	                'li',
-	                { key: i },
-	                React.createElement(Snippet, { snippet: props.list[i].snippet, onClick: props.onClick, anchorText: "Close",
-	                    videoId: props.list[i].id.videoId }),
-	                React.createElement(
-	                    'div',
-	                    { className: 'player' },
-	                    player
-	                )
-	            ));
-	        } else {
-	            resultList.push(React.createElement(
-	                'li',
-	                { key: i },
-	                React.createElement(Snippet, { snippet: props.list[i].snippet, onClick: props.onClick, anchorText: "View",
-	                    videoId: props.list[i].id.videoId }),
-	                React.createElement('div', { className: 'player' })
-	            ));
-	        }
-	    }
-	    var header = '';
-	    var resultHeader;
-	    if (props.list.length) {
-	        if (!props.keyword) header = 'Most viewed videos ';else header = '"' + props.keyword + '"';
 	
-	        if (props.after) header = header + ' after ' + props.after;
-	        if (props.before) header = header + ' before ' + props.before;
-	        resultHeader = React.createElement(
-	            'h3',
-	            null,
-	            'Results for ',
-	            header
-	        );
-	    }
+	    var chart = React.createElement(Chart, { list: props.list, after: props.after, before: props.before,
+	        keyword: props.keyword, onClick: props.onClick, index: props.index });
 	    return React.createElement(
-	        'ul',
+	        'section',
 	        null,
-	        resultHeader,
-	        resultList
+	        chart
 	    );
 	};
+	
+	var Chart = React.createClass({
+	    displayName: 'Chart',
+	
+	    getInitialState: function getInitialState() {
+	        return {
+	            clickedBar: null
+	        };
+	    },
+	    filter: function filter(event) {
+	        this.setState({
+	            clickedBar: $('#q-graph tr').index($(event.target).closest('tr'))
+	        });
+	    },
+	    render: function render() {
+	        //chart
+	        if (!this.props.list.length) return null;
+	        var timeList = [];
+	        var minDate, maxDate;
+	
+	        for (var i = 0; i < this.props.list.length; i++) {
+	            var date = new Date(this.props.list[i].snippet.publishedAt);
+	            timeList.push({ i: i, milliseconds: date.getTime() });
+	            if (i === 0) {
+	                minDate = date.getTime();maxDate = date.getTime();
+	            }
+	            if (minDate > date) minDate = date;
+	            if (maxDate < date) maxDate = date;
+	        }
+	        var spanDate = (maxDate - minDate) / 5;
+	
+	        var value = [];
+	        for (i = 0; i < 5; i++) {
+	            value.push([]);
+	        }
+	        for (i = 0; i < timeList.length; i++) {
+	            if (timeList[i].milliseconds === maxDate.getTime()) {
+	                value[4].push(timeList[i]);continue;
+	            }
+	            var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
+	            value[index].push(timeList[i]);
+	        }
+	
+	        var maxLength = 0;
+	        for (i = 0; i < value.length; i++) {
+	            if (maxLength < value[i].length) maxLength = value[i].length;
+	        }
+	
+	        var spanLength = Math.ceil(maxLength / 4);
+	        for (i = 0; i < value.length; i++) {
+	            value[i].barHeight = { height: String(value[i].length / spanLength * 3) + 'rem' };
+	            var date = new Date(spanDate * i + minDate.getTime());
+	            value[i].time = date.toISOString().substring(0, date.toISOString().length - 5).replace('-', '/') + ' - ';
+	            date = new Date(spanDate * (i + 1) + minDate.getTime());
+	            value[i].time += date.toISOString().substring(0, date.toISOString().length - 5).replace('-', '/');
+	        }
+	        //header
+	        var header = '';
+	        var resultHeader;
+	        if (this.props.list.length) {
+	            if (!this.props.keyword) header = 'Most viewed videos ';else header = '"' + this.props.keyword + '"';
+	
+	            if (this.props.after) header = header + ' after ' + this.props.after;
+	            if (this.props.before) header = header + ' before ' + this.props.before;
+	            resultHeader = React.createElement(
+	                'h3',
+	                null,
+	                'Results for ',
+	                header
+	            );
+	        }
+	        //result
+	        var resultList = [];
+	        var list = [];
+	        if (this.state.clickedBar !== null) {
+	            for (i = 0; i < value[this.state.clickedBar].length; i++) {
+	                list.push(this.props.list[value[this.state.clickedBar][i].i]);
+	            }
+	        } else list = this.props.list;
+	
+	        for (i = 0; i < list.length; i++) {
+	            if (this.props.index.indexOf(i) !== -1) {
+	                var player = React.createElement(PlayVideo, { videoId: list[i].id.videoId });
+	                resultList.push(React.createElement(
+	                    'li',
+	                    { key: i },
+	                    React.createElement(Snippet, { snippet: list[i].snippet, onClick: this.props.onClick, anchorText: "Close",
+	                        videoId: list[i].id.videoId }),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'player' },
+	                        player
+	                    )
+	                ));
+	            } else {
+	                resultList.push(React.createElement(
+	                    'li',
+	                    { key: i },
+	                    React.createElement(Snippet, { snippet: list[i].snippet, onClick: this.props.onClick, anchorText: "View",
+	                        videoId: list[i].id.videoId }),
+	                    React.createElement('div', { className: 'player' })
+	                ));
+	            }
+	        }
+	
+	        return React.createElement(
+	            'div',
+	            null,
+	            React.createElement(
+	                'div',
+	                { className: 'chart' },
+	                React.createElement(
+	                    'table',
+	                    { id: 'q-graph' },
+	                    React.createElement(
+	                        'tbody',
+	                        null,
+	                        React.createElement(
+	                            'tr',
+	                            { className: 'qtr', id: 'q1', onClick: this.filter },
+	                            React.createElement(
+	                                'th',
+	                                { scope: 'row' },
+	                                value[0].time
+	                            ),
+	                            React.createElement(
+	                                'td',
+	                                { className: 'value bar', style: value[0].barHeight },
+	                                React.createElement(
+	                                    'p',
+	                                    null,
+	                                    value[0].length
+	                                )
+	                            )
+	                        ),
+	                        React.createElement(
+	                            'tr',
+	                            { className: 'qtr', id: 'q2', onClick: this.filter },
+	                            React.createElement(
+	                                'th',
+	                                { scope: 'row' },
+	                                value[1].time
+	                            ),
+	                            React.createElement(
+	                                'td',
+	                                { className: 'value bar', style: value[1].barHeight },
+	                                React.createElement(
+	                                    'p',
+	                                    null,
+	                                    value[1].length
+	                                )
+	                            )
+	                        ),
+	                        React.createElement(
+	                            'tr',
+	                            { className: 'qtr', id: 'q3', onClick: this.filter },
+	                            React.createElement(
+	                                'th',
+	                                { scope: 'row' },
+	                                value[2].time
+	                            ),
+	                            React.createElement(
+	                                'td',
+	                                { className: 'value bar', style: value[2].barHeight },
+	                                React.createElement(
+	                                    'p',
+	                                    null,
+	                                    value[2].length
+	                                )
+	                            )
+	                        ),
+	                        React.createElement(
+	                            'tr',
+	                            { className: 'qtr', id: 'q4', onClick: this.filter },
+	                            React.createElement(
+	                                'th',
+	                                { scope: 'row' },
+	                                value[3].time
+	                            ),
+	                            React.createElement(
+	                                'td',
+	                                { className: 'value bar', style: value[3].barHeight },
+	                                React.createElement(
+	                                    'p',
+	                                    null,
+	                                    value[3].length
+	                                )
+	                            )
+	                        ),
+	                        React.createElement(
+	                            'tr',
+	                            { className: 'qtr', id: 'q5', onClick: this.filter },
+	                            React.createElement(
+	                                'th',
+	                                { scope: 'row' },
+	                                value[4].time
+	                            ),
+	                            React.createElement(
+	                                'td',
+	                                { className: 'value bar', style: value[4].barHeight },
+	                                React.createElement(
+	                                    'p',
+	                                    null,
+	                                    value[4].length
+	                                )
+	                            )
+	                        )
+	                    )
+	                ),
+	                React.createElement(
+	                    'div',
+	                    { id: 'ticks' },
+	                    React.createElement(
+	                        'div',
+	                        { className: 'tick' },
+	                        React.createElement(
+	                            'p',
+	                            null,
+	                            spanLength * 5
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'tick' },
+	                        React.createElement(
+	                            'p',
+	                            null,
+	                            spanLength * 4
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'tick' },
+	                        React.createElement(
+	                            'p',
+	                            null,
+	                            spanLength * 3
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'tick' },
+	                        React.createElement(
+	                            'p',
+	                            null,
+	                            spanLength * 2
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'tick' },
+	                        React.createElement(
+	                            'p',
+	                            null,
+	                            spanLength * 1
+	                        )
+	                    ),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'tick' },
+	                        React.createElement(
+	                            'p',
+	                            null,
+	                            '0'
+	                        )
+	                    )
+	                )
+	            ),
+	            React.createElement(
+	                'ul',
+	                null,
+	                resultHeader,
+	                resultList
+	            )
+	        );
+	    }
+	});
 	
 	var Snippet = function Snippet(props) {
 	    return React.createElement(
