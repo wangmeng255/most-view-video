@@ -23801,8 +23801,8 @@
 	    playVideo: function playVideo(event) {
 	        event.preventDefault();
 	        var isView = event.target.text === 'View' ? true : false;
-	        var index = $('li').index(event.target.closest('li'));
-	        if (isView) this.props.dispatch(actions.playVideo(index));else this.props.dispatch(actions.closeVideo(index));
+	        var index = event.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-index');
+	        if (isView) this.props.dispatch(actions.playVideo(parseInt(index)));else this.props.dispatch(actions.closeVideo(parseInt(index)));
 	    },
 	    render: function render() {
 	        var results = React.createElement(Results, { list: this.props.list, keyword: this.props.keyword,
@@ -23909,7 +23909,7 @@
 	    },
 	    filter: function filter(event) {
 	        this.setState({
-	            clickedBar: $('#q-graph tr').index($(event.target).closest('tr'))
+	            clickedBar: parseInt(event.target.parentNode.getAttribute('data-index'))
 	        });
 	    },
 	    render: function render() {
@@ -23950,10 +23950,11 @@
 	        for (i = 0; i < value.length; i++) {
 	            value[i].barHeight = { height: String(value[i].length / spanLength * 3) + 'rem' };
 	            var date = new Date(spanDate * i + minDate.getTime());
-	            value[i].time = date.toISOString().substring(0, date.toISOString().length - 5).replace('-', '/') + ' - ';
-	            date = new Date(spanDate * (i + 1) + minDate.getTime());
-	            value[i].time += date.toISOString().substring(0, date.toISOString().length - 5).replace('-', '/');
+	            var tempDate = date.toUTCString().split(' ');
+	            value[i].time = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
 	        }
+	        maxDate.toUTCString().split(' ');
+	        maxDate = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
 	        //header
 	        var header = '';
 	        var resultHeader;
@@ -23983,8 +23984,8 @@
 	                var player = React.createElement(PlayVideo, { videoId: list[i].id.videoId });
 	                resultList.push(React.createElement(
 	                    'li',
-	                    { key: i },
-	                    React.createElement(Snippet, { snippet: list[i].snippet, onClick: this.props.onClick, anchorText: "Close",
+	                    { key: i, 'data-index': i, onClick: this.props.onClick },
+	                    React.createElement(Snippet, { snippet: list[i].snippet, anchorText: "Close",
 	                        videoId: list[i].id.videoId }),
 	                    React.createElement(
 	                        'div',
@@ -23995,8 +23996,8 @@
 	            } else {
 	                resultList.push(React.createElement(
 	                    'li',
-	                    { key: i },
-	                    React.createElement(Snippet, { snippet: list[i].snippet, onClick: this.props.onClick, anchorText: "View",
+	                    { key: i, 'data-index': i, onClick: this.props.onClick },
+	                    React.createElement(Snippet, { snippet: list[i].snippet, anchorText: "View",
 	                        videoId: list[i].id.videoId }),
 	                    React.createElement('div', { className: 'player' })
 	                ));
@@ -24013,11 +24014,16 @@
 	                    'table',
 	                    { id: 'q-graph' },
 	                    React.createElement(
+	                        'caption',
+	                        null,
+	                        'Videos by Published Date Filter'
+	                    ),
+	                    React.createElement(
 	                        'tbody',
 	                        null,
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q1', onClick: this.filter },
+	                            { className: 'qtr', id: 'q1', 'data-index': '0', onClick: this.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24035,7 +24041,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q2', onClick: this.filter },
+	                            { className: 'qtr', id: 'q2', 'data-index': '1', onClick: this.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24053,7 +24059,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q3', onClick: this.filter },
+	                            { className: 'qtr', id: 'q3', 'data-index': '2', onClick: this.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24071,7 +24077,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q4', onClick: this.filter },
+	                            { className: 'qtr', id: 'q4', 'data-index': '3', onClick: this.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24089,11 +24095,16 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q5', onClick: this.filter },
+	                            { className: 'qtr', id: 'q5', 'data-index': '4', onClick: this.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                value[4].time
+	                            ),
+	                            React.createElement(
+	                                'th',
+	                                { scope: 'row' },
+	                                maxDate
 	                            ),
 	                            React.createElement(
 	                                'td',
