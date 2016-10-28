@@ -23986,7 +23986,7 @@
 	        //result
 	        var resultList = [];
 	        var list = [];
-	        if (this.props.clickedBar !== null) {
+	        if (this.props.clickedBar !== null && this.props.clickedBar !== undefined) {
 	            for (i = 0; i < value[this.props.clickedBar].length; i++) {
 	                list.push(this.props.list[value[this.props.clickedBar][i].i]);
 	            }
