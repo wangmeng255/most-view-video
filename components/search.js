@@ -3,6 +3,7 @@ var actions = require('../actions/actions');
 var connect = require('react-redux').connect;
 
 var Search = React.createClass({
+    //do searching keyword in YouTube API
     Search: function(event) {
         event.preventDefault();
         var keyword = this.refs.search.value.trim();
@@ -12,6 +13,7 @@ var Search = React.createClass({
             this.props.dispatch(actions.searchVideos(keyword, after, before));
         }
     },
+    //click on 'View' or 'Close' button to open or close video
     playVideo: function(event) {
         event.preventDefault();
         var isView = event.target.text === 'View'? true: false;
@@ -19,16 +21,19 @@ var Search = React.createClass({
         if(isView) this.props.dispatch(actions.playVideo(parseInt(index)));
         else this.props.dispatch(actions.closeVideo(parseInt(index)));
     },
+    //do filter basedon published date
     filter: function(event) {
         this.props.dispatch(actions.clickBar(parseInt(event.target.parentNode.getAttribute('data-index'))));
     },
+    //run component
     render: function() {
+        //pass results list to Results component
         var results = <Results list={this.props.list} keyword={this.props.keyword} 
                                index={this.props.index} onClick={this.playVideo}
                                after={this.props.after} before={this.props.before} 
                                error={this.props.error} clickedBar={this.props.clickedBar}
                                filter={this.filter} />;;
-        
+        //calculate current date to set max for date input
         var now = new Date;
         var month = String(now.getUTCMonth() + 1);
         if(month.length < 2) month = '0' + month;
@@ -60,6 +65,7 @@ var Search = React.createClass({
 });
 
 var Results = function(props) {
+    //return error
     if(props.error) {
         return (
             <div id="error">
@@ -69,7 +75,7 @@ var Results = function(props) {
             </div>
         );
     }
-    
+    // return chart and results
     var chart = <Chart list={props.list} after={props.after} before={props.before} 
                  keyword={props.keyword} onClick={props.onClick} index={props.index} 
                  clickedBar={props.clickedBar} filter={props.filter} />;
@@ -86,7 +92,7 @@ var Chart = React.createClass({
         if(!this.props.list.length) return null;
         var timeList = [];
         var minDate, maxDate;
-        
+        //split published date in 5 span
         for(var i = 0; i < this.props.list.length; i++) {
             var date = new Date(this.props.list[i].snippet.publishedAt);
             timeList.push({i: i, milliseconds: date.getTime()});
@@ -95,7 +101,7 @@ var Chart = React.createClass({
             if(maxDate < date) maxDate = date;
         }
         var spanDate = (maxDate - minDate)/5;
-        
+        //count videos in each span
         var value = [];
         for(i = 0; i < 5; i++) {
             value.push([]);
@@ -105,12 +111,12 @@ var Chart = React.createClass({
             var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
             value[index].push(timeList[i]);
         }
-        
+        //split height of column in 5 span
         var maxLength = 0;
         for(i = 0; i < value.length; i++) {
             if(maxLength < value[i].length) maxLength = value[i].length;
         }
-        
+        //calculate height of each date span
         var spanLength = Math.ceil(maxLength/4);
         for(i = 0; i < value.length; i++) {
             value[i].barHeight = {height: String(value[i].length/spanLength * 3) + 'rem'};
@@ -120,7 +126,7 @@ var Chart = React.createClass({
         }
         maxDate.toUTCString().split(' ');
         maxDate = (tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4]);
-        //header
+        //header for results
         var header = '';
         var resultHeader;
         if(this.props.list.length) {
@@ -134,7 +140,7 @@ var Chart = React.createClass({
         //result
         var resultList = [];
         var list = [];
-        if(this.props.clickedBar !== null) {
+        if((this.props.clickedBar !== null) && (this.props.clickedBar !== undefined)) {
             for(i = 0; i < value[this.props.clickedBar].length; i++) {
                 list.push(this.props.list[value[this.props.clickedBar][i].i]);
             }
@@ -144,7 +150,7 @@ var Chart = React.createClass({
         for(i = 0; i < list.length; i++) {
             if(this.props.index.indexOf(i) !== -1) {
                 var player = <PlayVideo videoId={list[i].id.videoId} />;
-                resultList.push(
+                resultList.push(//for open video li
                     <li key={i}>
                         <Snippet snippet={list[i].snippet} anchorText={"Close"} 
                                  videoId={list[i].id.videoId} data_index={i} onClick={this.props.onClick}/>
@@ -154,7 +160,7 @@ var Chart = React.createClass({
                     </li>
                 );
             }
-            else {
+            else {//for close video li
                 resultList.push(
                     <li key={i}>
                         <Snippet snippet={list[i].snippet} anchorText={"View"} 
