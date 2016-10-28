@@ -6,6 +6,7 @@ var initialState = {
     before: null,
     list: [],
     error: null,
+    clickedBar: null,
     index: []
 };
 
@@ -18,6 +19,7 @@ var searchReducer = function(state, action) {
             before: action.before,
             list: action.list,
             error: null,
+            clickedBar: null,
             index: []
         });
     }
@@ -28,6 +30,7 @@ var searchReducer = function(state, action) {
             before: action.before,
             list: [],
             error: action.error,
+            clickedBar: null,
             index: []
         });
     } else if(action.type === actions.PLAY_VIDEO) {
@@ -38,6 +41,11 @@ var searchReducer = function(state, action) {
         return Object.assign({}, state, {index: state.index.filter((value) => {
             return value !== action.index
         })});
+    } else if(action.type === actions.CLICK_BAR) {
+        return Object.assign({}, state, {
+            clickedBar: action.clickedBar,
+            index: []
+        });
     }
     return state;
 };

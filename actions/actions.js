@@ -38,6 +38,14 @@ var closeVideo = function(index) {
     }
 };
 
+var CLICK_BAR = 'CLICK_BAR';
+var clickBar = function(clickedBar) {
+    return {
+        type: CLICK_BAR,
+        clickedBar: clickedBar
+    }
+};
+
 var searchVideos = function(keyword, after, before) {
     var url = 'https://www.googleapis.com/youtube/v3/search?';
     var publishedAfter ='';
@@ -83,4 +91,6 @@ exports.PLAY_VIDEO = PLAY_VIDEO;
 exports.playVideo = playVideo;
 exports.CLOSE_VIDEO = CLOSE_VIDEO;
 exports.closeVideo = closeVideo;
+exports.CLICK_BAR = CLICK_BAR;
+exports.clickBar = clickBar;
 exports.searchVideos = searchVideos;

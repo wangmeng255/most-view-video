@@ -15,15 +15,19 @@ var Search = React.createClass({
     playVideo: function(event) {
         event.preventDefault();
         var isView = event.target.text === 'View'? true: false;
-        var index = event.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-index');
+        var index = event.target.getAttribute('data-index');
         if(isView) this.props.dispatch(actions.playVideo(parseInt(index)));
         else this.props.dispatch(actions.closeVideo(parseInt(index)));
+    },
+    filter: function(event) {
+        this.props.dispatch(actions.clickBar(parseInt(event.target.parentNode.getAttribute('data-index'))));
     },
     render: function() {
         var results = <Results list={this.props.list} keyword={this.props.keyword} 
                                index={this.props.index} onClick={this.playVideo}
                                after={this.props.after} before={this.props.before} 
-                               error={this.props.error} />;;
+                               error={this.props.error} clickedBar={this.props.clickedBar}
+                               filter={this.filter} />;;
         
         var now = new Date;
         var month = String(now.getUTCMonth() + 1);
@@ -67,7 +71,8 @@ var Results = function(props) {
     }
     
     var chart = <Chart list={props.list} after={props.after} before={props.before} 
-                 keyword={props.keyword} onClick={props.onClick} index={props.index} />;
+                 keyword={props.keyword} onClick={props.onClick} index={props.index} 
+                 clickedBar={props.clickedBar} filter={props.filter} />;
     return (
         <section>
             {chart}
@@ -76,16 +81,6 @@ var Results = function(props) {
 };
 
 var Chart = React.createClass({
-    getInitialState: function() {
-        return {
-            clickedBar: null
-        };
-    },
-    filter: function(event) {
-        this.setState({
-            clickedBar: parseInt(event.target.parentNode.getAttribute('data-index'))
-        });
-    },
     render: function() {
         //chart
         if(!this.props.list.length) return null;
@@ -139,9 +134,9 @@ var Chart = React.createClass({
         //result
         var resultList = [];
         var list = [];
-        if(this.state.clickedBar !== null) {
-            for(i = 0; i < value[this.state.clickedBar].length; i++) {
-                list.push(this.props.list[value[this.state.clickedBar][i].i]);
+        if(this.props.clickedBar !== null) {
+            for(i = 0; i < value[this.props.clickedBar].length; i++) {
+                list.push(this.props.list[value[this.props.clickedBar][i].i]);
             }
         }
         else list = this.props.list;
@@ -150,9 +145,9 @@ var Chart = React.createClass({
             if(this.props.index.indexOf(i) !== -1) {
                 var player = <PlayVideo videoId={list[i].id.videoId} />;
                 resultList.push(
-                    <li key={i} data-index={i} onClick={this.props.onClick} >
+                    <li key={i}>
                         <Snippet snippet={list[i].snippet} anchorText={"Close"} 
-                                 videoId={list[i].id.videoId}/>
+                                 videoId={list[i].id.videoId} data_index={i} onClick={this.props.onClick}/>
                         <div className="player">
                             {player}
                         </div>
@@ -161,9 +156,9 @@ var Chart = React.createClass({
             }
             else {
                 resultList.push(
-                    <li key={i} data-index={i} onClick={this.props.onClick}>
+                    <li key={i}>
                         <Snippet snippet={list[i].snippet} anchorText={"View"} 
-                                 videoId={list[i].id.videoId}/>
+                                 videoId={list[i].id.videoId} data_index={i} onClick={this.props.onClick}/>
                         <div className="player">
                         </div>
                     </li> 
@@ -175,25 +170,25 @@ var Chart = React.createClass({
             <div>
                 <div className="chart">
                     <table id="q-graph">
-                        <caption>Videos by Published Date Filter</caption>
+                        <caption>Videos Filtered by Published Date</caption>
                         <tbody>
-                            <tr className="qtr" id="q1" data-index="0" onClick={this.filter}>
+                            <tr className="qtr" id="q1" data-index="0" onClick={this.props.filter}>
                                 <th scope="row">{value[0].time}</th>
                                 <td className="value bar" style={value[0].barHeight}><p>{value[0].length}</p></td>
                             </tr>
-                            <tr className="qtr" id="q2" data-index="1" onClick={this.filter}>
+                            <tr className="qtr" id="q2" data-index="1" onClick={this.props.filter}>
                                 <th scope="row">{value[1].time}</th>
                                 <td className="value bar" style={value[1].barHeight}><p>{value[1].length}</p></td>
                             </tr>
-                            <tr className="qtr" id="q3" data-index="2" onClick={this.filter}>
+                            <tr className="qtr" id="q3" data-index="2" onClick={this.props.filter}>
                                 <th scope="row">{value[2].time}</th>
                                 <td className="value bar" style={value[2].barHeight}><p>{value[2].length}</p></td>
                             </tr>
-                            <tr className="qtr" id="q4" data-index="3" onClick={this.filter}>
+                            <tr className="qtr" id="q4" data-index="3" onClick={this.props.filter}>
                                 <th scope="row">{value[3].time}</th>
                                 <td className="value bar" style={value[3].barHeight}><p>{value[3].length}</p></td>
                             </tr>
-                            <tr className="qtr" id="q5" data-index="4" onClick={this.filter}>
+                            <tr className="qtr" id="q5" data-index="4" onClick={this.props.filter}>
                                 <th scope="row">{value[4].time}</th>
                                 <th scope="row">{maxDate}</th>
                                 <td className="value bar" style={value[4].barHeight}><p>{value[4].length}</p></td>
@@ -218,7 +213,6 @@ var Chart = React.createClass({
         );
     }
 });
-
 var Snippet = function(props) {
     return (
         <div className="video-info">
@@ -237,7 +231,7 @@ var Snippet = function(props) {
                     </a>
                     <span> in </span>
                     <span className="publish-date-time">{props.snippet.publishedAt.split("T")[0]}</span>
-                    <a href="#" onClick={props.onClick}>
+                    <a href="#" onClick={props.onClick} data-index={props.data_index}>
                         {props.anchorText}
                     </a>
                 </div>
@@ -261,6 +255,7 @@ var mapStateToProps = function(state, props) {
         before: state.before,
         list: state.list,
         index: state.index,
+        clickedBar: state.clickedBar,
         error: state.error
     };
 };
@@ -269,4 +264,5 @@ var Container = connect(mapStateToProps)(Search);
 
 exports.Container = Container;
 exports.Results = Results;
+exports.Snippet = Snippet;
 exports.PlayVideo = PlayVideo;

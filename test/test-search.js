@@ -347,6 +347,7 @@ var search = require('../components/search');
 var store = require('../store');
 var Container = search.Container;
 var Results = search.Results;
+var Snippet = search.Snippet;
 
 describe('Search component', function() {
     it('Renders the YouTube logo and search form', function() {
@@ -357,36 +358,24 @@ describe('Search component', function() {
         var result = renderer.getRenderOutput();
         result.type.displayName.should.equal('Connect(Search)');
     }),
-    
     it('Renders the Results when get data successfully', function() {
         var list = items;
         var keyword = "dogs";
         var index = [0, 1];
         var onClick = function() {};
         var error = null;
+        var clickedBar = 0;
         
         var renderer = TestUtils.createRenderer();
-        renderer.render(<Results list={list} keyword={keyword} index={index} onClick={onClick} error={error} />);
+        renderer.render(<Results list={list} keyword={keyword} index={index} 
+                         onClick={onClick} error={error} clickedBar={clickedBar} />);
         var result = renderer.getRenderOutput();
-        result.type.should.equal('ul');
+        result.type.should.equal('section');
         
-        var h3 = result.props.children[0];
-        h3.type.should.equal('h3');
-        h3.props.children[0].should.equal('Results for ');
-        h3.props.children[1].should.equal('"dogs"');
-        
-        for(var i = 0; i < items.length; i++) {
-            var li = result.props.children[1][i];
-            li.type.should.equal('li');
-            li.key.should.equal(String(i));
-            li.props.children[0].props.snippet.should.equal(items[i].snippet);
-            li.props.children[0].props.onClick.should.equal(onClick);
-            if(index.indexOf(i) !== -1) li.props.children[0].props.anchorText.should.equal('Close');
-            else li.props.children[0].props.anchorText.should.equal('View');
-            
-            li.props.children[1].type.should.equal('div');
-            li.props.children[1].props.className.should.equal('player');
-        }
+        var chart = result.props.children;
+        chart.props.keyword.should.equal(keyword);
+        chart.props.index.should.equal(index);
+        chart.props.clickedBar.should.equal(clickedBar);
     }),
     it('Renders the Results when get error', function() {
         var error = errorResponse;
@@ -415,5 +404,66 @@ describe('Search component', function() {
         p.props.children[2].should.equal(' Type is "');
         p.props.children[3].type.should.equal('strong');
         p.props.children[3].props.children.should.equal(error.response.type);
+    }),
+    it('Renders the Snippet when get data successfully', function() {
+        var snippet = items[0].snippet;
+        var videoId = items[0].id.videoId;
+        
+        var renderer = TestUtils.createRenderer();
+        renderer.render(<Snippet snippet={snippet} anchorText={"Close"} 
+                                 videoId={videoId} />);
+        var result = renderer.getRenderOutput();
+        result.type.should.equal('div');
+        result.props.className.should.equal('video-info');
+        
+        var img = result.props.children[0];
+        img.type.should.equal('img');
+        img.props.src.should.equal(snippet.thumbnails.default.url); 
+        img.props.alt.should.equal(snippet.title);
+        img.props.width.should.equal(snippet.thumbnails.default.width);
+        img.props.height.should.equal(snippet.thumbnails.default.height);
+        img.props.title.should.equal(snippet.title);
+        
+        var div = result.props.children[1];
+        div.type.should.equal('div');
+        var h4 = div.props.children[0];
+        h4.type.should.equal('h4');
+        
+        var a = h4.props.children;
+        a.props.href.should.equal("https://www.youtube.com/watch?v=" + videoId);
+        a.props.target.should.equal(videoId);
+        a.props.children.should.equal(snippet.title);
+        
+        var p = div.props.children[1];
+        p.type.should.equal('p');
+        p.props.children.should.equal(snippet.description);
+        
+        var divDiv = div.props.children[2];
+        divDiv.type.should.equal('div');
+        
+        var span = divDiv.props.children[0];
+        span.type.should.equal('span');
+        span.props.children.should.equal('published by ');
+        
+        a = divDiv.props.children[1];
+        a.type.should.equal('a');
+        a.props.className.should.equal('channel-id');
+        a.props.href.should.equal("https://www.youtube.com/channel/" + snippet.channelId);
+        a.props.target.should.equal(snippet.channelId);
+        a.props.children.should.equal(snippet.channelTitle);
+        
+        span = divDiv.props.children[2];
+        span.type.should.equal('span');
+        span.props.children.should.equal(' in ');
+        
+        span = divDiv.props.children[3];
+        span.type.should.equal('span');
+        span.props.className.should.equal('publish-date-time');
+        span.props.children.should.equal(snippet.publishedAt.split("T")[0]);
+        
+        a = divDiv.props.children[4];
+        a.type.should.equal('a');
+        a.props.href.should.equal('#');
+        a.props.children.should.equal('Close');
     });
 });
