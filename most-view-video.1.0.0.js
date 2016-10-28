@@ -23203,6 +23203,7 @@
 	    before: null,
 	    list: [],
 	    error: null,
+	    clickedBar: null,
 	    index: []
 	};
 	
@@ -23215,6 +23216,7 @@
 	            before: action.before,
 	            list: action.list,
 	            error: null,
+	            clickedBar: null,
 	            index: []
 	        });
 	    } else if (action.type === actions.SEARCH_VIDEOS_ERROR) {
@@ -23224,6 +23226,7 @@
 	            before: action.before,
 	            list: [],
 	            error: action.error,
+	            clickedBar: null,
 	            index: []
 	        });
 	    } else if (action.type === actions.PLAY_VIDEO) {
@@ -23234,6 +23237,11 @@
 	        return Object.assign({}, state, { index: state.index.filter(function (value) {
 	                return value !== action.index;
 	            }) });
+	    } else if (action.type === actions.CLICK_BAR) {
+	        return Object.assign({}, state, {
+	            clickedBar: action.clickedBar,
+	            index: []
+	        });
 	    }
 	    return state;
 	};
@@ -23286,6 +23294,14 @@
 	    };
 	};
 	
+	var CLICK_BAR = 'CLICK_BAR';
+	var clickBar = function clickBar(clickedBar) {
+	    return {
+	        type: CLICK_BAR,
+	        clickedBar: clickedBar
+	    };
+	};
+	
 	var searchVideos = function searchVideos(keyword, after, before) {
 	    var url = 'https://www.googleapis.com/youtube/v3/search?';
 	    var publishedAfter = '';
@@ -23323,6 +23339,8 @@
 	exports.playVideo = playVideo;
 	exports.CLOSE_VIDEO = CLOSE_VIDEO;
 	exports.closeVideo = closeVideo;
+	exports.CLICK_BAR = CLICK_BAR;
+	exports.clickBar = clickBar;
 	exports.searchVideos = searchVideos;
 
 /***/ },
@@ -23801,14 +23819,18 @@
 	    playVideo: function playVideo(event) {
 	        event.preventDefault();
 	        var isView = event.target.text === 'View' ? true : false;
-	        var index = event.target.parentNode.parentNode.parentNode.parentNode.getAttribute('data-index');
+	        var index = event.target.getAttribute('data-index');
 	        if (isView) this.props.dispatch(actions.playVideo(parseInt(index)));else this.props.dispatch(actions.closeVideo(parseInt(index)));
+	    },
+	    filter: function filter(event) {
+	        this.props.dispatch(actions.clickBar(parseInt(event.target.parentNode.getAttribute('data-index'))));
 	    },
 	    render: function render() {
 	        var results = React.createElement(Results, { list: this.props.list, keyword: this.props.keyword,
 	            index: this.props.index, onClick: this.playVideo,
 	            after: this.props.after, before: this.props.before,
-	            error: this.props.error });;
+	            error: this.props.error, clickedBar: this.props.clickedBar,
+	            filter: this.filter });;
 	
 	        var now = new Date();
 	        var month = String(now.getUTCMonth() + 1);
@@ -23891,7 +23913,8 @@
 	    }
 	
 	    var chart = React.createElement(Chart, { list: props.list, after: props.after, before: props.before,
-	        keyword: props.keyword, onClick: props.onClick, index: props.index });
+	        keyword: props.keyword, onClick: props.onClick, index: props.index,
+	        clickedBar: props.clickedBar, filter: props.filter });
 	    return React.createElement(
 	        'section',
 	        null,
@@ -23902,16 +23925,6 @@
 	var Chart = React.createClass({
 	    displayName: 'Chart',
 	
-	    getInitialState: function getInitialState() {
-	        return {
-	            clickedBar: null
-	        };
-	    },
-	    filter: function filter(event) {
-	        this.setState({
-	            clickedBar: parseInt(event.target.parentNode.getAttribute('data-index'))
-	        });
-	    },
 	    render: function render() {
 	        //chart
 	        if (!this.props.list.length) return null;
@@ -23973,9 +23986,9 @@
 	        //result
 	        var resultList = [];
 	        var list = [];
-	        if (this.state.clickedBar !== null) {
-	            for (i = 0; i < value[this.state.clickedBar].length; i++) {
-	                list.push(this.props.list[value[this.state.clickedBar][i].i]);
+	        if (this.props.clickedBar !== null) {
+	            for (i = 0; i < value[this.props.clickedBar].length; i++) {
+	                list.push(this.props.list[value[this.props.clickedBar][i].i]);
 	            }
 	        } else list = this.props.list;
 	
@@ -23984,9 +23997,9 @@
 	                var player = React.createElement(PlayVideo, { videoId: list[i].id.videoId });
 	                resultList.push(React.createElement(
 	                    'li',
-	                    { key: i, 'data-index': i, onClick: this.props.onClick },
+	                    { key: i },
 	                    React.createElement(Snippet, { snippet: list[i].snippet, anchorText: "Close",
-	                        videoId: list[i].id.videoId }),
+	                        videoId: list[i].id.videoId, data_index: i, onClick: this.props.onClick }),
 	                    React.createElement(
 	                        'div',
 	                        { className: 'player' },
@@ -23996,9 +24009,9 @@
 	            } else {
 	                resultList.push(React.createElement(
 	                    'li',
-	                    { key: i, 'data-index': i, onClick: this.props.onClick },
+	                    { key: i },
 	                    React.createElement(Snippet, { snippet: list[i].snippet, anchorText: "View",
-	                        videoId: list[i].id.videoId }),
+	                        videoId: list[i].id.videoId, data_index: i, onClick: this.props.onClick }),
 	                    React.createElement('div', { className: 'player' })
 	                ));
 	            }
@@ -24016,14 +24029,14 @@
 	                    React.createElement(
 	                        'caption',
 	                        null,
-	                        'Videos by Published Date Filter'
+	                        'Videos Filtered by Published Date'
 	                    ),
 	                    React.createElement(
 	                        'tbody',
 	                        null,
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q1', 'data-index': '0', onClick: this.filter },
+	                            { className: 'qtr', id: 'q1', 'data-index': '0', onClick: this.props.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24041,7 +24054,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q2', 'data-index': '1', onClick: this.filter },
+	                            { className: 'qtr', id: 'q2', 'data-index': '1', onClick: this.props.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24059,7 +24072,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q3', 'data-index': '2', onClick: this.filter },
+	                            { className: 'qtr', id: 'q3', 'data-index': '2', onClick: this.props.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24077,7 +24090,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q4', 'data-index': '3', onClick: this.filter },
+	                            { className: 'qtr', id: 'q4', 'data-index': '3', onClick: this.props.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24095,7 +24108,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q5', 'data-index': '4', onClick: this.filter },
+	                            { className: 'qtr', id: 'q5', 'data-index': '4', onClick: this.props.filter },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -24186,7 +24199,6 @@
 	        );
 	    }
 	});
-	
 	var Snippet = function Snippet(props) {
 	    return React.createElement(
 	        'div',
@@ -24238,7 +24250,7 @@
 	                ),
 	                React.createElement(
 	                    'a',
-	                    { href: '#', onClick: props.onClick },
+	                    { href: '#', onClick: props.onClick, 'data-index': props.data_index },
 	                    props.anchorText
 	                )
 	            )
@@ -24259,6 +24271,7 @@
 	        before: state.before,
 	        list: state.list,
 	        index: state.index,
+	        clickedBar: state.clickedBar,
 	        error: state.error
 	    };
 	};
@@ -24267,6 +24280,7 @@
 	
 	exports.Container = Container;
 	exports.Results = Results;
+	exports.Snippet = Snippet;
 	exports.PlayVideo = PlayVideo;
 
 /***/ }
