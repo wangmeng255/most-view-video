@@ -49,12 +49,11 @@ var Search = React.createClass({
                      Top 50 Viewed Videos
                 </h2>
                 <form onSubmit={this.Search}>
-                    <label htmlFor="keyword">Search Phrase</label>
-                    <input id="keyword" type="search" ref="search" placeholder='e.g., "dogs" or "dogs|cats"' onChange={this.Search}/>
+                    <input id="keyword" type="search" ref="search" placeholder='Search for e.g., "dogs" or "dogs|cats"' onChange={this.Search}/>
                     <div>
-                        <label htmlFor="after"> After (UTC Time): </label>
+                        <label htmlFor="after">Time span: </label>
                         <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search} />
-                        <label htmlFor="before">Before (UTC Time): </label>
+                        <label htmlFor="before"> --- </label>
                         <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search}/>
                     </div>
                 </form>
