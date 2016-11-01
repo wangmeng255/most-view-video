@@ -41,15 +41,10 @@ form div {
     flex-grow: 1;
 }
 form div label {
-    flex-grow: 0.6;
+    flex-grow: 0.15;
 }
 form div label[for="before"] {
     padding-left: 1rem;
-}
-label[for="keyword"] {
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-    display: block;
 }
 section {
     width: 80%;
