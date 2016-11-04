@@ -1,4 +1,7 @@
 var React = require('react');
+var router = require('react-router');
+var Link = router.Link;
+var Form = require('react-router-form');
 var actions = require('../actions/actions');
 var connect = require('react-redux').connect;
 
@@ -11,6 +14,8 @@ var Search = React.createClass({
         var before = this.refs.before.value;
         if(keyword) {
             this.props.dispatch(actions.searchVideos(keyword, after, before));
+            var path = this.getURLpath(keyword, after, before);
+            this.props.history.push(path);
         }
     },
     //click on 'View' or 'Close' button to open or close video
@@ -23,22 +28,87 @@ var Search = React.createClass({
     },
     //do filter basedon published date
     filter: function(event) {
-        this.props.dispatch(actions.clickBar(parseInt(event.target.parentNode.getAttribute('data-index'))));
+        var i = parseInt(event.target.getAttribute('data-index'));
+        var after = this.value[i].timeStart;
+        var before;
+        if(i < 4) before = this.value[i + 1].timeStart;
+        else before = this.maxDateISO;
+        this.props.dispatch(actions.clickBar(i));
+        var path = this.getURLpath(this.props.keyword, after, before);
+        this.props.history.push(path);
+    },
+    getURLpath: function(keyword, after, before) {
+        var path = '';
+        if(keyword) {
+            path = '/?search/q=' + keyword;
+        if(after && !before) 
+            path += '&span=' + after + '-present';
+        else if(!after && before) 
+            path += '&span=2005-04-23' + after;
+        else if(after && before) 
+            path += '&span=' + before + '-'+ after;
+        }
+        return path;
+    },
+    calcChartValue: function() {
+        var timeList = [];
+        var minDate;
+        //split published date in 5 span
+        var date = new Date(this.props.list[0].snippet.publishedAt);
+        minDate = date.getTime(); this.maxDate = date.getTime();
+        for(var i = 1; i < this.props.list.length; i++) {
+            date = new Date(this.props.list[i].snippet.publishedAt);
+            timeList.push({i: i, milliseconds: date.getTime()});
+            if(minDate > date) minDate = date;
+            if(this.maxDate < date) this.maxDate = date;
+        }
+        var spanDate = (this.maxDate - minDate)/5;
+        //count videos in each span
+        this.value = [];
+        for(i = 0; i < 5; i++) {
+            this.value.push([]);
+        }
+        for(i = 0; i < timeList.length; i++) {
+            if(timeList[i].milliseconds === this.maxDate.getTime()) {this.value[4].push(timeList[i]); continue;}
+            var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
+            this.value[index].push(timeList[i]);
+        }
+        //split height of column in 5 span
+        var maxLength = 0;
+        for(i = 0; i < this.value.length; i++) {
+            if(maxLength < this.value[i].length) maxLength = this.value[i].length;
+        }
+        //calculate height of each date span
+        this.spanLength = Math.ceil(maxLength/4);
+        for(i = 0; i < this.value.length; i++) {
+            this.value[i].barHeight = {height: String(this.value[i].length/this.spanLength * 3) + 'rem'};
+            date = new Date(spanDate * i + minDate.getTime());
+            var tempDate = date.toUTCString().split(' ');
+            this.value[i].time = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
+            this.value[i].timeStart = date.toISOString().split('T')[0];
+        }
+        tempDate = this.maxDate.toUTCString().split(' ');
+        this.maxDateISO = this.maxDate.toISOString().split('T')[0];
+        this.maxDate = (tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4]);
     },
     //run component
     render: function() {
         //pass results list to Results component
+        if(this.props.list.length) this.calcChartValue();
         var results = <Results list={this.props.list} keyword={this.props.keyword} 
                                index={this.props.index} onClick={this.playVideo}
                                after={this.props.after} before={this.props.before} 
                                error={this.props.error} clickedBar={this.props.clickedBar}
-                               filter={this.filter} />;;
+                               filter={this.filter} maxDate={this.maxDate} maxDateISO={this.maxDateISO} 
+                               value={this.value} spanLength={this.spanLength} />;;
         //calculate current date to set max for date input
         var now = new Date;
         var month = String(now.getUTCMonth() + 1);
         if(month.length < 2) month = '0' + month;
         var day = String(now.getUTCDate());
         if(day.length < 2) day = '0' + day;
+        
+        var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before);
         
         return (
             <div>
@@ -48,15 +118,16 @@ var Search = React.createClass({
                      title={"YouTube Logo"} />
                      Top 50 Viewed Videos
                 </h2>
-                <form onSubmit={this.Search}>
-                    <input id="keyword" type="search" ref="search" placeholder='Search for e.g., "dogs" or "dogs|cats"' onChange={this.Search}/>
+                <p>Explore trending YouTube videos by published date.</p>
+                <Form to={path} method="POST">
+                    <input id="keyword" type="search" ref="search" placeholder='Search for "dogs" or "dogs|cats"' onChange={this.Search}/>
                     <div>
                         <label htmlFor="after">Time span: </label>
                         <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search} />
                         <label htmlFor="before"> --- </label>
                         <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search}/>
                     </div>
-                </form>
+                </Form>
                 {results}
             </div>
         );
@@ -77,7 +148,8 @@ var Results = function(props) {
     // return chart and results
     var chart = <Chart list={props.list} after={props.after} before={props.before} 
                  keyword={props.keyword} onClick={props.onClick} index={props.index} 
-                 clickedBar={props.clickedBar} filter={props.filter} />;
+                 clickedBar={props.clickedBar} filter={props.filter} maxDate={props.maxDate}
+                 maxDateISO={props.maxDateISO} value={props.value} spanLength={props.spanLength} />;
     return (
         <section>
             {chart}
@@ -89,42 +161,7 @@ var Chart = React.createClass({
     render: function() {
         //chart
         if(!this.props.list.length) return null;
-        var timeList = [];
-        var minDate, maxDate;
-        //split published date in 5 span
-        for(var i = 0; i < this.props.list.length; i++) {
-            var date = new Date(this.props.list[i].snippet.publishedAt);
-            timeList.push({i: i, milliseconds: date.getTime()});
-            if(i === 0) {minDate = date.getTime(); maxDate = date.getTime();}
-            if(minDate > date) minDate = date;
-            if(maxDate < date) maxDate = date;
-        }
-        var spanDate = (maxDate - minDate)/5;
-        //count videos in each span
-        var value = [];
-        for(i = 0; i < 5; i++) {
-            value.push([]);
-        }
-        for(i = 0; i < timeList.length; i++) {
-            if(timeList[i].milliseconds === maxDate.getTime()) {value[4].push(timeList[i]); continue;}
-            var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
-            value[index].push(timeList[i]);
-        }
-        //split height of column in 5 span
-        var maxLength = 0;
-        for(i = 0; i < value.length; i++) {
-            if(maxLength < value[i].length) maxLength = value[i].length;
-        }
-        //calculate height of each date span
-        var spanLength = Math.ceil(maxLength/4);
-        for(i = 0; i < value.length; i++) {
-            value[i].barHeight = {height: String(value[i].length/spanLength * 3) + 'rem'};
-            var date = new Date(spanDate * i + minDate.getTime());
-            var tempDate = date.toUTCString().split(' ');
-            value[i].time = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
-        }
-        maxDate.toUTCString().split(' ');
-        maxDate = (tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4]);
+        
         //header for results
         var header = '';
         var resultHeader;
@@ -140,8 +177,8 @@ var Chart = React.createClass({
         var resultList = [];
         var list = [];
         if((this.props.clickedBar !== null) && (this.props.clickedBar !== undefined)) {
-            for(i = 0; i < value[this.props.clickedBar].length; i++) {
-                list.push(this.props.list[value[this.props.clickedBar][i].i]);
+            for(var i = 0; i < this.props.value[this.props.clickedBar].length; i++) {
+                list.push(this.props.list[this.props.value[this.props.clickedBar][i].i]);
             }
         }
         else list = this.props.list;
@@ -177,36 +214,56 @@ var Chart = React.createClass({
                     <table id="q-graph">
                         <caption>Videos Filtered by Published Date</caption>
                         <tbody>
-                            <tr className="qtr" id="q1" data-index="0" onClick={this.props.filter}>
-                                <th scope="row">{value[0].time}</th>
-                                <td className="value bar" style={value[0].barHeight}><p>{value[0].length}</p></td>
+                            <tr className="qtr" id="q1" onClick={this.props.filter}>
+                                <th scope="row">{this.props.value[0].time}</th>
+                                <td className="value bar" style={this.props.value[0].barHeight} data-index="0">
+                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.value[0].timeStart + ',' + this.props.value[1].timeStart} >
+                                        <p data-index="0">{this.props.value[0].length}</p>
+                                    </Link>
+                                </td>
                             </tr>
-                            <tr className="qtr" id="q2" data-index="1" onClick={this.props.filter}>
-                                <th scope="row">{value[1].time}</th>
-                                <td className="value bar" style={value[1].barHeight}><p>{value[1].length}</p></td>
+                            <tr className="qtr" id="q2" onClick={this.props.filter}>
+                                <th scope="row">{this.props.value[1].time}</th>
+                                <td className="value bar" style={this.props.value[1].barHeight} data-index="1">
+                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.value[1].timeStart + ',' + this.props.value[2].timeStart} >
+                                        <p data-index="1">{this.props.value[1].length}</p>
+                                    </Link>
+                                </td>
                             </tr>
-                            <tr className="qtr" id="q3" data-index="2" onClick={this.props.filter}>
-                                <th scope="row">{value[2].time}</th>
-                                <td className="value bar" style={value[2].barHeight}><p>{value[2].length}</p></td>
+                            <tr className="qtr" id="q3" onClick={this.props.filter}>
+                                <th scope="row">{this.props.value[2].time}</th>
+                                <td className="value bar" style={this.props.value[2].barHeight} data-index="2">
+                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.value[2].timeStart + ',' + this.props.value[3].timeStart} >
+                                        <p data-index="2">{this.props.value[2].length}</p>
+                                    </Link>
+                                </td>
                             </tr>
-                            <tr className="qtr" id="q4" data-index="3" onClick={this.props.filter}>
-                                <th scope="row">{value[3].time}</th>
-                                <td className="value bar" style={value[3].barHeight}><p>{value[3].length}</p></td>
+                            <tr className="qtr" id="q4" onClick={this.props.filter}>
+                                <th scope="row">{this.props.value[3].time}</th>
+                                <td className="value bar" style={this.props.value[3].barHeight} data-index="3">
+                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.value[3].timeStart + ',' + this.props.value[4].timeStart} >
+                                        <p data-index="3">{this.props.value[3].length}</p>
+                                    </Link>
+                                </td>
                             </tr>
-                            <tr className="qtr" id="q5" data-index="4" onClick={this.props.filter}>
-                                <th scope="row">{value[4].time}</th>
-                                <th scope="row">{maxDate}</th>
-                                <td className="value bar" style={value[4].barHeight}><p>{value[4].length}</p></td>
+                            <tr className="qtr" id="q5" onClick={this.props.filter}>
+                                <th scope="row">{this.props.value[4].time}</th>
+                                <th scope="row">{this.props.maxDate}</th>
+                                <td className="value bar" style={this.props.value[4].barHeight} data-index="4">
+                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.value[4].timeStart + ',' + this.props.maxDateISO} >
+                                        <p data-index="4">{this.props.value[4].length}</p>
+                                    </Link>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                     
                     <div id="ticks">
-                    <div className="tick"><p>{spanLength * 5}</p></div>
-                    <div className="tick"><p>{spanLength * 4}</p></div>
-                    <div className="tick"><p>{spanLength * 3}</p></div>
-                    <div className="tick"><p>{spanLength * 2}</p></div>
-                    <div className="tick"><p>{spanLength * 1}</p></div>
+                    <div className="tick"><p>{this.props.spanLength * 5}</p></div>
+                    <div className="tick"><p>{this.props.spanLength * 4}</p></div>
+                    <div className="tick"><p>{this.props.spanLength * 3}</p></div>
+                    <div className="tick"><p>{this.props.spanLength * 2}</p></div>
+                    <div className="tick"><p>{this.props.spanLength * 1}</p></div>
                     <div className="tick"><p>0</p></div>
                     </div>
                 </div>
@@ -221,11 +278,12 @@ var Chart = React.createClass({
 var Snippet = function(props) {
     return (
         <div className="video-info">
-            <img src={props.snippet.thumbnails.default.url} 
-                 alt={props.snippet.title} 
-                 width={props.snippet.thumbnails.default.width} 
-                 height={props.snippet.thumbnails.default.height} 
-                 title={props.snippet.title} />
+            <a href={"https://www.youtube.com/watch?v=" + props.videoId} target={props.videoId}>
+                <img src={props.snippet.thumbnails.default.url} alt={props.snippet.title} 
+                        width={props.snippet.thumbnails.default.width} 
+                        height={props.snippet.thumbnails.default.height} 
+                        title={props.snippet.title} />
+            </a>
             <div>
                 <h4><a href={"https://www.youtube.com/watch?v=" + props.videoId} target={props.videoId}>{props.snippet.title}</a></h4>
                 <p>{props.snippet.description}</p>

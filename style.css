@@ -9,6 +9,13 @@ h3 {
     margin: 0;
     letter-spacing: 0.05rem
 }
+h2 + p {
+    font-weight: bold;
+    text-align: center;
+    font-family: 'Source Sans Pro', sans-serif;;
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+}
 #logo {
     height: 5rem;
     width: 8rem;
@@ -113,12 +120,16 @@ ul, #error {
 }
 
 #q-graph td:hover {
-    background-color: #c0c0c0;
+    background-color: #a366a3;
     opacity: .9;
     color: black;
     cursor: pointer;
 }
-
+#q-graph td:hover p {
+    font-weight: bold;
+    color: #a366a3;
+    font-size: 1rem;
+}
 #q-graph tbody tr {
     height: 15rem;
     padding-top: 2px;
@@ -163,6 +174,10 @@ ul, #error {
     padding: 0;
     opacity: .8;
     color: #e62117;
+    font-size: 0.9rem;
+}
+#q-graph .bar a {
+    text-decoration: none;
 }
 #q-graph .value {
     left: 25%;
