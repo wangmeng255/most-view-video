@@ -29496,7 +29496,7 @@
 	    },
 	    //do filter basedon published date
 	    filter: function filter(event) {
-	        var i = parseInt(event.target.getAttribute('data-index'));
+	        var i = parseInt(event.target.closest('tr').getAttribute('data-index'));
 	        var after = this.value[i].timeStart;
 	        var before;
 	        if (i < 4) before = this.value[i + 1].timeStart;else before = this.maxDateISO;
@@ -29555,6 +29555,20 @@
 	        this.maxDateISO = this.maxDate.toISOString().split('T')[0];
 	        this.maxDate = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
 	    },
+	    Share: function Share(event) {
+	        var url = window.location.href;
+	        var title = document.title;
+	        var shareUrl = {
+	            Facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
+	            Twitter: "https://twitter.com/home?status=" + url + " " + title,
+	            Linkedin: "https://www.linkedin.com/shareArticle?mini=true&url=" + url,
+	            GooglePlus: "https://plus.google.com/share?url=" + url,
+	            Pinterest: "https://pinterest.com/pin/create/link/?url=" + url
+	        };
+	        var webTitle = event.target.closest('a').getAttribute('title');
+	        var webName = webTitle.split(' ');
+	        event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
+	    },
 	    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
 	        $('#keyword').jvFloat();
 	    },
@@ -29576,8 +29590,6 @@
 	        if (day.length < 2) day = '0' + day;
 	
 	        var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before);
-	        var url = window.location.href;
-	        var title = document.title;
 	
 	        return React.createElement(
 	            'div',
@@ -29621,7 +29633,7 @@
 	                { className: 'mn-social-bottom-c' },
 	                React.createElement(
 	                    'a',
-	                    { className: 'mn-social-bottom', title: 'Share on Facebook', href: "https://www.facebook.com/sharer/sharer.php?u=" + url, target: '_blank' },
+	                    { className: 'mn-social-bottom', title: 'Share on Facebook', target: '_blank', onClick: this.Share },
 	                    React.createElement(
 	                        'svg',
 	                        { width: '16', height: '16', viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
@@ -29630,7 +29642,7 @@
 	                ),
 	                React.createElement(
 	                    'a',
-	                    { className: 'mn-social-bottom', title: 'Share on Twitter', href: "https://twitter.com/home?status=" + url + " " + title, target: '_blank' },
+	                    { className: 'mn-social-bottom', title: 'Share on Twitter', target: '_blank', onClick: this.Share },
 	                    React.createElement(
 	                        'svg',
 	                        { width: '16', height: '16', viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
@@ -29639,7 +29651,7 @@
 	                ),
 	                React.createElement(
 	                    'a',
-	                    { className: 'mn-social-bottom', title: 'Share on Linkedin', href: "https://www.linkedin.com/shareArticle?mini=true&url=" + url, target: '_blank' },
+	                    { className: 'mn-social-bottom', title: 'Share on Linkedin', target: '_blank', onClick: this.Share },
 	                    React.createElement(
 	                        'svg',
 	                        { width: '16', height: '16', viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
@@ -29648,7 +29660,7 @@
 	                ),
 	                React.createElement(
 	                    'a',
-	                    { className: 'mn-social-bottom', title: 'Share on Google+', href: "https://plus.google.com/share?url=" + url, target: '_blank' },
+	                    { className: 'mn-social-bottom', title: 'Share on GooglePlus', target: '_blank', onClick: this.Share },
 	                    React.createElement(
 	                        'svg',
 	                        { width: '24', height: '16', viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
@@ -29657,7 +29669,7 @@
 	                ),
 	                React.createElement(
 	                    'a',
-	                    { className: 'mn-social-bottom', title: 'Share on Pinterest', href: "https://pinterest.com/pin/create/link/?url=" + url, target: '_blank' },
+	                    { className: 'mn-social-bottom', title: 'Share on Pinterest', target: '_blank', onClick: this.Share },
 	                    React.createElement(
 	                        'svg',
 	                        { width: '16', height: '16', viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
@@ -29791,7 +29803,7 @@
 	                        null,
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q1', onClick: this.props.filter },
+	                            { className: 'qtr', id: 'q1', onClick: this.props.filter, 'data-index': '0' },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -29799,13 +29811,13 @@
 	                            ),
 	                            React.createElement(
 	                                'td',
-	                                { className: 'value bar', style: this.props.value[0].barHeight, 'data-index': '0' },
+	                                { className: 'value bar', style: this.props.value[0].barHeight },
 	                                React.createElement(
 	                                    Link,
 	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[0].timeStart + ',' + this.props.value[1].timeStart },
 	                                    React.createElement(
 	                                        'p',
-	                                        { 'data-index': '0' },
+	                                        null,
 	                                        this.props.value[0].length
 	                                    )
 	                                )
@@ -29813,7 +29825,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q2', onClick: this.props.filter },
+	                            { className: 'qtr', id: 'q2', onClick: this.props.filter, 'data-index': '1' },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -29821,13 +29833,13 @@
 	                            ),
 	                            React.createElement(
 	                                'td',
-	                                { className: 'value bar', style: this.props.value[1].barHeight, 'data-index': '1' },
+	                                { className: 'value bar', style: this.props.value[1].barHeight },
 	                                React.createElement(
 	                                    Link,
 	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[1].timeStart + ',' + this.props.value[2].timeStart },
 	                                    React.createElement(
 	                                        'p',
-	                                        { 'data-index': '1' },
+	                                        null,
 	                                        this.props.value[1].length
 	                                    )
 	                                )
@@ -29835,7 +29847,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q3', onClick: this.props.filter },
+	                            { className: 'qtr', id: 'q3', onClick: this.props.filter, 'data-index': '2' },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -29843,13 +29855,13 @@
 	                            ),
 	                            React.createElement(
 	                                'td',
-	                                { className: 'value bar', style: this.props.value[2].barHeight, 'data-index': '2' },
+	                                { className: 'value bar', style: this.props.value[2].barHeight },
 	                                React.createElement(
 	                                    Link,
 	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[2].timeStart + ',' + this.props.value[3].timeStart },
 	                                    React.createElement(
 	                                        'p',
-	                                        { 'data-index': '2' },
+	                                        null,
 	                                        this.props.value[2].length
 	                                    )
 	                                )
@@ -29857,7 +29869,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q4', onClick: this.props.filter },
+	                            { className: 'qtr', id: 'q4', onClick: this.props.filter, 'data-index': '3' },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -29865,13 +29877,13 @@
 	                            ),
 	                            React.createElement(
 	                                'td',
-	                                { className: 'value bar', style: this.props.value[3].barHeight, 'data-index': '3' },
+	                                { className: 'value bar', style: this.props.value[3].barHeight },
 	                                React.createElement(
 	                                    Link,
 	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[3].timeStart + ',' + this.props.value[4].timeStart },
 	                                    React.createElement(
 	                                        'p',
-	                                        { 'data-index': '3' },
+	                                        null,
 	                                        this.props.value[3].length
 	                                    )
 	                                )
@@ -29879,7 +29891,7 @@
 	                        ),
 	                        React.createElement(
 	                            'tr',
-	                            { className: 'qtr', id: 'q5', onClick: this.props.filter },
+	                            { className: 'qtr', id: 'q5', onClick: this.props.filter, 'data-index': '4' },
 	                            React.createElement(
 	                                'th',
 	                                { scope: 'row' },
@@ -29892,13 +29904,13 @@
 	                            ),
 	                            React.createElement(
 	                                'td',
-	                                { className: 'value bar', style: this.props.value[4].barHeight, 'data-index': '4' },
+	                                { className: 'value bar', style: this.props.value[4].barHeight },
 	                                React.createElement(
 	                                    Link,
 	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[4].timeStart + ',' + this.props.maxDateISO },
 	                                    React.createElement(
 	                                        'p',
-	                                        { 'data-index': '4' },
+	                                        null,
 	                                        this.props.value[4].length
 	                                    )
 	                                )
