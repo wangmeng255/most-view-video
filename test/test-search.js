@@ -392,7 +392,7 @@ describe('Search component', function() {
         result.props.id.should.equal('error');
         
         var h3 = result.props.children[0];
-        h3.type.should.equal('h3');
+        h3.type.should.equal('h2');
         h3.props.children[0].should.equal('Oh, we have got error Code: "');
         h3.props.children[1].should.equal(error.response.status);
         h3.props.children[2].should.equal('"');
@@ -416,7 +416,12 @@ describe('Search component', function() {
         result.type.should.equal('div');
         result.props.className.should.equal('video-info');
         
-        var img = result.props.children[0];
+        var a = result.props.children[0];
+        a.type.should.equal('a');
+        a.props.href.should.equal('https://www.youtube.com/watch?v=' + videoId);
+        a.props.target.should.equal(videoId);
+        
+        var img = a.props.children;
         img.type.should.equal('img');
         img.props.src.should.equal(snippet.thumbnails.default.url); 
         img.props.alt.should.equal(snippet.title);
@@ -427,7 +432,7 @@ describe('Search component', function() {
         var div = result.props.children[1];
         div.type.should.equal('div');
         var h4 = div.props.children[0];
-        h4.type.should.equal('h4');
+        h4.type.should.equal('h3');
         
         var a = h4.props.children;
         a.props.href.should.equal("https://www.youtube.com/watch?v=" + videoId);
