@@ -315,5 +315,6 @@ a:hover {
 .mn-social-bottom:hover {
     background: #e62117;
     fill: #ffffff;
-    top: -3px
+    top: -3px;
+    cursor: pointer;
 }
