@@ -29555,6 +29555,9 @@
 	        this.maxDateISO = this.maxDate.toISOString().split('T')[0];
 	        this.maxDate = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
 	    },
+	    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+	        $('#keyword').jvFloat();
+	    },
 	    //run component
 	    render: function render() {
 	        //pass results list to Results component
@@ -29573,16 +29576,16 @@
 	        if (day.length < 2) day = '0' + day;
 	
 	        var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before);
-	        var url = window.location;
+	        var url = window.location.href;
 	        var title = document.title;
 	
 	        return React.createElement(
 	            'div',
 	            null,
 	            React.createElement(
-	                'h2',
+	                'h1',
 	                null,
-	                React.createElement('img', { id: 'logo', src: 'YouTube-logo-full_color.png',
+	                React.createElement('img', { id: 'logo', src: 'YouTube-logo-light.png',
 	                    alt: "YouTube Logo",
 	                    title: "YouTube Logo" }),
 	                'Top 50 Viewed Videos'
@@ -29595,14 +29598,14 @@
 	            React.createElement(
 	                Form,
 	                { to: path, method: 'POST' },
-	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'Search for "dogs" or "dogs|cats"', onChange: this.Search }),
+	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'Search Phrase', onChange: this.Search }),
 	                React.createElement(
 	                    'div',
 	                    null,
 	                    React.createElement(
 	                        'label',
 	                        { htmlFor: 'after' },
-	                        'Time span: '
+	                        'Time span '
 	                    ),
 	                    React.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day, onChange: this.Search }),
 	                    React.createElement(
@@ -29674,7 +29677,7 @@
 	            'div',
 	            { id: 'error' },
 	            React.createElement(
-	                'h3',
+	                'h2',
 	                null,
 	                'Oh, we have got error Code: "',
 	                props.error.response.status,
@@ -29727,7 +29730,7 @@
 	            if (this.props.after) header = header + ' after ' + this.props.after;
 	            if (this.props.before) header = header + ' before ' + this.props.before;
 	            resultHeader = React.createElement(
-	                'h3',
+	                'h2',
 	                null,
 	                'Results for ',
 	                header
@@ -29987,7 +29990,7 @@
 	            'div',
 	            null,
 	            React.createElement(
-	                'h4',
+	                'h3',
 	                null,
 	                React.createElement(
 	                    'a',

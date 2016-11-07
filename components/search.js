@@ -91,6 +91,9 @@ var Search = React.createClass({
         this.maxDateISO = this.maxDate.toISOString().split('T')[0];
         this.maxDate = (tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4]);
     },
+    componentDidUpdate: function(prevProps, prevState){
+        $('#keyword').jvFloat();
+    },
     //run component
     render: function() {
         //pass results list to Results component
@@ -109,22 +112,22 @@ var Search = React.createClass({
         if(day.length < 2) day = '0' + day;
         
         var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before);
-        var url = window.location;
+        var url = window.location.href;
         var title = document.title;
         
         return (
             <div>
-                <h2>
-                    <img id="logo" src="YouTube-logo-full_color.png" 
+                <h1>
+                    <img id="logo" src="YouTube-logo-light.png" 
                      alt={"YouTube Logo"} 
                      title={"YouTube Logo"} />
                      Top 50 Viewed Videos
-                </h2>
+                </h1>
                 <p>Explore trending YouTube videos by published date.</p>
                 <Form to={path} method="POST">
-                    <input id="keyword" type="search" ref="search" placeholder='Search for "dogs" or "dogs|cats"' onChange={this.Search}/>
+                    <input id="keyword" type="search" ref="search" placeholder='Search Phrase' onChange={this.Search}/>
                     <div>
-                        <label htmlFor="after">Time span: </label>
+                        <label htmlFor="after">Time span </label>
                         <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search} />
                         <label htmlFor="before"> --- </label>
                         <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search}/>
@@ -158,7 +161,7 @@ var Results = function(props) {
     if(props.error) {
         return (
             <div id="error">
-                <h3>Oh, we have got error Code: "{props.error.response.status}"</h3>
+                <h2>Oh, we have got error Code: "{props.error.response.status}"</h2>
                 <p>Error at <a href={props.error.response.url} target={props.error.response.url}>{props.error.response.url}</a> Type is "<strong>{props.error.response.type}</strong>"
                 </p>
             </div>
@@ -190,7 +193,7 @@ var Chart = React.createClass({
             
             if(this.props.after) header = header + ' after ' + this.props.after;
             if(this.props.before) header = header + ' before ' + this.props.before;
-            resultHeader = <h3>Results for {header}</h3>;
+            resultHeader = <h2>Results for {header}</h2>;
         }
         //result
         var resultList = [];
@@ -304,7 +307,7 @@ var Snippet = function(props) {
                         title={props.snippet.title} />
             </a>
             <div>
-                <h4><a href={"https://www.youtube.com/watch?v=" + props.videoId} target={props.videoId}>{props.snippet.title}</a></h4>
+                <h3><a href={"https://www.youtube.com/watch?v=" + props.videoId} target={props.videoId}>{props.snippet.title}</a></h3>
                 <p>{props.snippet.description}</p>
                 <div>
                     <span>published by </span>
