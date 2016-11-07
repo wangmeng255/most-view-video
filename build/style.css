@@ -48,10 +48,10 @@ form div {
     flex-grow: 1;
 }
 form div label {
-    flex-grow: 0.6;
+    padding-right: 2rem;
 }
 form div label[for="before"] {
-    padding-left: 1rem;
+    padding: 0 2rem;
 }
 label[for="keyword"] {
     margin-bottom: 0.5rem;
@@ -287,4 +287,29 @@ a:hover {
 .player {
     text-align: center;
     margin: 0.2rem auto;
+}
+.mn-social-bottom-c {
+    position: fixed;
+    left: 1rem;
+    top: 10rem;
+    text-align: center;
+}
+.mn-social-bottom {
+    background: #f5f5f5;
+    width: 2rem;
+    height: 2rem;
+    box-sizing: border-box;
+    padding: 0.5rem 0;
+    fill: #e62117;
+    border-radius: 4px;
+    margin: 0 0.46875rem 0.9375rem;
+    transition: all .3s;
+    display: block;
+    text-align: center;
+    position: relative;
+}
+.mn-social-bottom:hover {
+    background: #e62117;
+    fill: #ffffff;
+    top: -3px
 }
