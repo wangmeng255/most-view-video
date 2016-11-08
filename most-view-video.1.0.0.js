@@ -52,7 +52,7 @@
 	var router = __webpack_require__(199);
 	var Router = router.Router;
 	var Route = router.Route;
-	var browserHistory = router.browserHistory;
+	var hashHistory = router.hashHistory;
 	
 	var store = __webpack_require__(262);
 	var search = __webpack_require__(268);
@@ -64,7 +64,7 @@
 	        { store: store },
 	        React.createElement(
 	            Router,
-	            { history: browserHistory },
+	            { history: hashHistory },
 	            React.createElement(
 	                Route,
 	                { path: '/', component: Container },
