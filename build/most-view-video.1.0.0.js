@@ -52,7 +52,7 @@
 	var router = __webpack_require__(199);
 	var Router = router.Router;
 	var Route = router.Route;
-	var hashHistory = router.hashHistory;
+	var browserHistory = router.browserHistory;
 	
 	var store = __webpack_require__(262);
 	var search = __webpack_require__(268);
@@ -64,7 +64,7 @@
 	        { store: store },
 	        React.createElement(
 	            Router,
-	            { history: hashHistory },
+	            { history: browserHistory },
 	            React.createElement(
 	                Route,
 	                { path: '/', component: Container },
@@ -29508,7 +29508,7 @@
 	        var path = '';
 	        if (keyword) {
 	            path = '/?search/q=' + keyword;
-	            if (after && !before) path += '&span=' + after + '-present';else if (!after && before) path += '&span=2005-04-23' + after;else if (after && before) path += '&span=' + before + '-' + after;
+	            if (after && !before) path += '&span=' + after + '-present';else if (!after && before) path += '&span=2005-04-23' + after;else if (after && before) path += '&span=' + after + '-' + before;
 	        }
 	        return path;
 	    },
@@ -29569,9 +29569,6 @@
 	        var webName = webTitle.split(' ');
 	        event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
 	    },
-	    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-	        $('#keyword').jvFloat();
-	    },
 	    //run component
 	    render: function render() {
 	        //pass results list to Results component
@@ -29610,7 +29607,12 @@
 	            React.createElement(
 	                Form,
 	                { to: path, method: 'POST' },
-	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'Search Phrase', onChange: this.Search }),
+	                React.createElement(
+	                    'label',
+	                    { htmlFor: 'keyword' },
+	                    'Search Phrase'
+	                ),
+	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'e.g. A|B -C = A or B but not C', onChange: this.Search }),
 	                React.createElement(
 	                    'div',
 	                    null,

@@ -46,7 +46,7 @@ var Search = React.createClass({
         else if(!after && before) 
             path += '&span=2005-04-23' + after;
         else if(after && before) 
-            path += '&span=' + before + '-'+ after;
+            path += '&span=' + after + '-'+ before;
         }
         return path;
     },
@@ -105,9 +105,6 @@ var Search = React.createClass({
         var webName = webTitle.split(' ');
         event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
     },
-    componentDidUpdate: function(prevProps, prevState){
-        $('#keyword').jvFloat();
-    },
     //run component
     render: function() {
         //pass results list to Results component
@@ -137,7 +134,8 @@ var Search = React.createClass({
                 </h1>
                 <p>Explore trending YouTube videos by published date.</p>
                 <Form to={path} method="POST">
-                    <input id="keyword" type="search" ref="search" placeholder='Search Phrase' onChange={this.Search}/>
+                    <label htmlFor="keyword">Search Phrase</label>
+                    <input id="keyword" type="search" ref="search" placeholder="e.g. A|B -C = A or B but not C" onChange={this.Search}/>
                     <div>
                         <label htmlFor="after">Time span </label>
                         <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search} />

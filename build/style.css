@@ -36,7 +36,7 @@ form div {
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     justify-content: space-between;
 }
 #keyword{
@@ -58,12 +58,18 @@ form div {
     flex-grow: 1;
 }
 form div label {
-    font-size: 0.8em;
     padding-right: 2rem;
-    color: #ffffff;
+    font-weight: bold;
 }
 form div label[for="before"] {
     padding: 0 2rem;
+}
+form label[for="keyword"] {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 0.8rem;
 }
 section {
     width: 80%;
