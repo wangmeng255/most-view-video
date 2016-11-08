@@ -58,6 +58,7 @@ form div {
     flex-grow: 1;
 }
 form div label {
+    font-size: 1rem;
     padding-right: 2rem;
     font-weight: bold;
 }
@@ -69,7 +70,7 @@ form label[for="keyword"] {
     margin-bottom: 0.2rem;
     color: #ffffff;
     font-weight: bold;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 section {
     width: 80%;
