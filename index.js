@@ -4,19 +4,22 @@ var Provider = require('react-redux').Provider;
 var router = require('react-router');
 var Router = router.Router;
 var Route = router.Route;
-var hashHistory = router.hashHistory;
+var browserHistory = router.browserHistory;
+var syncHistoryWithStore = require('react-router-redux').syncHistoryWithStore;
 
 var store = require('./store');
 var search = require('./components/search');
 var Container = search.Container;
 
+var history = syncHistoryWithStore(browserHistory, store);
+
 document.addEventListener('DOMContentLoaded', function() {
     ReactDOM.render(
         <Provider store={store}>
-            <Router history={hashHistory}>
+            <Router history={history}>
                 <Route path="/" component={Container}>
-                    <Route path="/?search/q=:keyword&span=:after-:before" onChange={search.Search} />
-                    <Route path="/?search/q=:keyword&span=:after-:before" onEnter={search.filter} />
+                    <Route path="/?search/q=:keyword&span=:after_:before" comppnent={Container} onChange={Container.Search} />
+                    <Route path="/?search/q=:keyword&span=:after_:before&filter=:i" component={Container} onEnter={Container.filter} />
                 </Route>
             </Router>
         </Provider>,

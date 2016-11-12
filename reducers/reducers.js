@@ -7,7 +7,8 @@ var initialState = {
     list: [],
     error: null,
     clickedBar: null,
-    index: []
+    index: [],
+    path: null
 };
 
 var searchReducer = function(state, action) {
@@ -20,7 +21,8 @@ var searchReducer = function(state, action) {
             list: action.list,
             error: null,
             clickedBar: null,
-            index: []
+            index: [],
+            path: action.path
         });
     }
     else if(action.type === actions.SEARCH_VIDEOS_ERROR) {
@@ -44,8 +46,11 @@ var searchReducer = function(state, action) {
     } else if(action.type === actions.CLICK_BAR) {
         return Object.assign({}, state, {
             clickedBar: action.clickedBar,
-            index: []
+            index: [],
+            path: action.path
         });
+    } else if(action.type === actions.CLEAR) {
+        return initialState;
     }
     return state;
 };

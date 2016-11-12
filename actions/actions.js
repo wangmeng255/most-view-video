@@ -1,13 +1,14 @@
 require('isomorphic-fetch');
 
 var SEARCH_VIDEOS_SUCCESS = 'SEARCH_VIDEOS_SUCCESS';
-var searchVideosSuccess = function(keyword, after, before, list) {
+var searchVideosSuccess = function(keyword, after, before, list, path) {
     return {
         type: SEARCH_VIDEOS_SUCCESS,
         keyword: keyword,
         after: after,
         before: before,
-        list: list
+        list: list,
+        path: path
     }
 };
 
@@ -39,14 +40,22 @@ var closeVideo = function(index) {
 };
 
 var CLICK_BAR = 'CLICK_BAR';
-var clickBar = function(clickedBar) {
+var clickBar = function(clickedBar, path) {
     return {
         type: CLICK_BAR,
-        clickedBar: clickedBar
+        clickedBar: clickedBar,
+        path: path
     }
 };
 
-var searchVideos = function(keyword, after, before) {
+var CLEAR = 'CLEAR';
+var clear = function() {
+    return {
+        type: CLEAR
+    }
+};
+
+var searchVideos = function(keyword, after, before, path) {
     var url = 'https://www.googleapis.com/youtube/v3/search?';
     var publishedAfter ='';
     var publishedBefore = '';
@@ -72,7 +81,7 @@ var searchVideos = function(keyword, after, before) {
         .then(function(data) {
             var items = data.items;
             return dispatch(
-                searchVideosSuccess(keyword, after, before, items)
+                searchVideosSuccess(keyword, after, before, items, path)
             );
         })
         .catch(function(error) {
@@ -94,3 +103,5 @@ exports.closeVideo = closeVideo;
 exports.CLICK_BAR = CLICK_BAR;
 exports.clickBar = clickBar;
 exports.searchVideos = searchVideos;
+exports.CLEAR = CLEAR;
+exports.clear = clear;

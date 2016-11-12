@@ -52,11 +52,14 @@
 	var router = __webpack_require__(199);
 	var Router = router.Router;
 	var Route = router.Route;
-	var hashHistory = router.hashHistory;
+	var browserHistory = router.browserHistory;
+	var syncHistoryWithStore = __webpack_require__(262).syncHistoryWithStore;
 	
-	var store = __webpack_require__(262);
-	var search = __webpack_require__(268);
+	var store = __webpack_require__(267);
+	var search = __webpack_require__(273);
 	var Container = search.Container;
+	
+	var history = syncHistoryWithStore(browserHistory, store);
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	    ReactDOM.render(React.createElement(
@@ -64,12 +67,12 @@
 	        { store: store },
 	        React.createElement(
 	            Router,
-	            { history: hashHistory },
+	            { history: history },
 	            React.createElement(
 	                Route,
 	                { path: '/', component: Container },
-	                React.createElement(Route, { path: '/?search/q=:keyword&span=:after-:before', onChange: search.Search }),
-	                React.createElement(Route, { path: '/?search/q=:keyword&span=:after-:before', onEnter: search.filter })
+	                React.createElement(Route, { path: '/?search/q=:keyword&span=:after_:before', comppnent: Container, onChange: Container.Search }),
+	                React.createElement(Route, { path: '/?search/q=:keyword&span=:after_:before&filter=:i', component: Container, onEnter: Container.filter })
 	            )
 	        )
 	    ), document.getElementById('app'));
@@ -28816,18 +28819,385 @@
 
 	'use strict';
 	
-	var redux = __webpack_require__(179);
-	var createStore = redux.createStore;
-	var applyMiddleware = redux.applyMiddleware;
-	var thunk = __webpack_require__(263).default;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.routerMiddleware = exports.routerActions = exports.goForward = exports.goBack = exports.go = exports.replace = exports.push = exports.CALL_HISTORY_METHOD = exports.routerReducer = exports.LOCATION_CHANGE = exports.syncHistoryWithStore = undefined;
 	
-	var reducers = __webpack_require__(264);
+	var _reducer = __webpack_require__(263);
 	
-	var store = createStore(reducers.searchReducer, applyMiddleware(thunk));
-	module.exports = store;
+	Object.defineProperty(exports, 'LOCATION_CHANGE', {
+	  enumerable: true,
+	  get: function get() {
+	    return _reducer.LOCATION_CHANGE;
+	  }
+	});
+	Object.defineProperty(exports, 'routerReducer', {
+	  enumerable: true,
+	  get: function get() {
+	    return _reducer.routerReducer;
+	  }
+	});
+	
+	var _actions = __webpack_require__(264);
+	
+	Object.defineProperty(exports, 'CALL_HISTORY_METHOD', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.CALL_HISTORY_METHOD;
+	  }
+	});
+	Object.defineProperty(exports, 'push', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.push;
+	  }
+	});
+	Object.defineProperty(exports, 'replace', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.replace;
+	  }
+	});
+	Object.defineProperty(exports, 'go', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.go;
+	  }
+	});
+	Object.defineProperty(exports, 'goBack', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.goBack;
+	  }
+	});
+	Object.defineProperty(exports, 'goForward', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.goForward;
+	  }
+	});
+	Object.defineProperty(exports, 'routerActions', {
+	  enumerable: true,
+	  get: function get() {
+	    return _actions.routerActions;
+	  }
+	});
+	
+	var _sync = __webpack_require__(265);
+	
+	var _sync2 = _interopRequireDefault(_sync);
+	
+	var _middleware = __webpack_require__(266);
+	
+	var _middleware2 = _interopRequireDefault(_middleware);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	exports.syncHistoryWithStore = _sync2['default'];
+	exports.routerMiddleware = _middleware2['default'];
 
 /***/ },
 /* 263 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	exports.routerReducer = routerReducer;
+	/**
+	 * This action type will be dispatched when your history
+	 * receives a location change.
+	 */
+	var LOCATION_CHANGE = exports.LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
+	
+	var initialState = {
+	  locationBeforeTransitions: null
+	};
+	
+	/**
+	 * This reducer will update the state with the most recent location history
+	 * has transitioned to. This may not be in sync with the router, particularly
+	 * if you have asynchronously-loaded routes, so reading from and relying on
+	 * this state is discouraged.
+	 */
+	function routerReducer() {
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+	
+	  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	      type = _ref.type,
+	      payload = _ref.payload;
+	
+	  if (type === LOCATION_CHANGE) {
+	    return _extends({}, state, { locationBeforeTransitions: payload });
+	  }
+	
+	  return state;
+	}
+
+/***/ },
+/* 264 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 * This action type will be dispatched by the history actions below.
+	 * If you're writing a middleware to watch for navigation events, be sure to
+	 * look for actions of this type.
+	 */
+	var CALL_HISTORY_METHOD = exports.CALL_HISTORY_METHOD = '@@router/CALL_HISTORY_METHOD';
+	
+	function updateLocation(method) {
+	  return function () {
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+	
+	    return {
+	      type: CALL_HISTORY_METHOD,
+	      payload: { method: method, args: args }
+	    };
+	  };
+	}
+	
+	/**
+	 * These actions correspond to the history API.
+	 * The associated routerMiddleware will capture these events before they get to
+	 * your reducer and reissue them as the matching function on your history.
+	 */
+	var push = exports.push = updateLocation('push');
+	var replace = exports.replace = updateLocation('replace');
+	var go = exports.go = updateLocation('go');
+	var goBack = exports.goBack = updateLocation('goBack');
+	var goForward = exports.goForward = updateLocation('goForward');
+	
+	var routerActions = exports.routerActions = { push: push, replace: replace, go: go, goBack: goBack, goForward: goForward };
+
+/***/ },
+/* 265 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	exports['default'] = syncHistoryWithStore;
+	
+	var _reducer = __webpack_require__(263);
+	
+	var defaultSelectLocationState = function defaultSelectLocationState(state) {
+	  return state.routing;
+	};
+	
+	/**
+	 * This function synchronizes your history state with the Redux store.
+	 * Location changes flow from history to the store. An enhanced history is
+	 * returned with a listen method that responds to store updates for location.
+	 *
+	 * When this history is provided to the router, this means the location data
+	 * will flow like this:
+	 * history.push -> store.dispatch -> enhancedHistory.listen -> router
+	 * This ensures that when the store state changes due to a replay or other
+	 * event, the router will be updated appropriately and can transition to the
+	 * correct router state.
+	 */
+	function syncHistoryWithStore(history, store) {
+	  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+	      _ref$selectLocationSt = _ref.selectLocationState,
+	      selectLocationState = _ref$selectLocationSt === undefined ? defaultSelectLocationState : _ref$selectLocationSt,
+	      _ref$adjustUrlOnRepla = _ref.adjustUrlOnReplay,
+	      adjustUrlOnReplay = _ref$adjustUrlOnRepla === undefined ? true : _ref$adjustUrlOnRepla;
+	
+	  // Ensure that the reducer is mounted on the store and functioning properly.
+	  if (typeof selectLocationState(store.getState()) === 'undefined') {
+	    throw new Error('Expected the routing state to be available either as `state.routing` ' + 'or as the custom expression you can specify as `selectLocationState` ' + 'in the `syncHistoryWithStore()` options. ' + 'Ensure you have added the `routerReducer` to your store\'s ' + 'reducers via `combineReducers` or whatever method you use to isolate ' + 'your reducers.');
+	  }
+	
+	  var initialLocation = void 0;
+	  var isTimeTraveling = void 0;
+	  var unsubscribeFromStore = void 0;
+	  var unsubscribeFromHistory = void 0;
+	  var currentLocation = void 0;
+	
+	  // What does the store say about current location?
+	  var getLocationInStore = function getLocationInStore(useInitialIfEmpty) {
+	    var locationState = selectLocationState(store.getState());
+	    return locationState.locationBeforeTransitions || (useInitialIfEmpty ? initialLocation : undefined);
+	  };
+	
+	  // Init initialLocation with potential location in store
+	  initialLocation = getLocationInStore();
+	
+	  // If the store is replayed, update the URL in the browser to match.
+	  if (adjustUrlOnReplay) {
+	    var handleStoreChange = function handleStoreChange() {
+	      var locationInStore = getLocationInStore(true);
+	      if (currentLocation === locationInStore || initialLocation === locationInStore) {
+	        return;
+	      }
+	
+	      // Update address bar to reflect store state
+	      isTimeTraveling = true;
+	      currentLocation = locationInStore;
+	      history.transitionTo(_extends({}, locationInStore, {
+	        action: 'PUSH'
+	      }));
+	      isTimeTraveling = false;
+	    };
+	
+	    unsubscribeFromStore = store.subscribe(handleStoreChange);
+	    handleStoreChange();
+	  }
+	
+	  // Whenever location changes, dispatch an action to get it in the store
+	  var handleLocationChange = function handleLocationChange(location) {
+	    // ... unless we just caused that location change
+	    if (isTimeTraveling) {
+	      return;
+	    }
+	
+	    // Remember where we are
+	    currentLocation = location;
+	
+	    // Are we being called for the first time?
+	    if (!initialLocation) {
+	      // Remember as a fallback in case state is reset
+	      initialLocation = location;
+	
+	      // Respect persisted location, if any
+	      if (getLocationInStore()) {
+	        return;
+	      }
+	    }
+	
+	    // Tell the store to update by dispatching an action
+	    store.dispatch({
+	      type: _reducer.LOCATION_CHANGE,
+	      payload: location
+	    });
+	  };
+	  unsubscribeFromHistory = history.listen(handleLocationChange);
+	
+	  // support history 3.x
+	  if (history.getCurrentLocation) {
+	    handleLocationChange(history.getCurrentLocation());
+	  }
+	
+	  // The enhanced history uses store as source of truth
+	  return _extends({}, history, {
+	    // The listeners are subscribed to the store instead of history
+	    listen: function listen(listener) {
+	      // Copy of last location.
+	      var lastPublishedLocation = getLocationInStore(true);
+	
+	      // Keep track of whether we unsubscribed, as Redux store
+	      // only applies changes in subscriptions on next dispatch
+	      var unsubscribed = false;
+	      var unsubscribeFromStore = store.subscribe(function () {
+	        var currentLocation = getLocationInStore(true);
+	        if (currentLocation === lastPublishedLocation) {
+	          return;
+	        }
+	        lastPublishedLocation = currentLocation;
+	        if (!unsubscribed) {
+	          listener(lastPublishedLocation);
+	        }
+	      });
+	
+	      // History listeners expect a synchronous call. Make the first call to the
+	      // listener after subscribing to the store, in case the listener causes a
+	      // location change (e.g. when it redirects)
+	      listener(lastPublishedLocation);
+	
+	      // Let user unsubscribe later
+	      return function () {
+	        unsubscribed = true;
+	        unsubscribeFromStore();
+	      };
+	    },
+	
+	
+	    // It also provides a way to destroy internal listeners
+	    unsubscribe: function unsubscribe() {
+	      if (adjustUrlOnReplay) {
+	        unsubscribeFromStore();
+	      }
+	      unsubscribeFromHistory();
+	    }
+	  });
+	}
+
+/***/ },
+/* 266 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports['default'] = routerMiddleware;
+	
+	var _actions = __webpack_require__(264);
+	
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+	
+	/**
+	 * This middleware captures CALL_HISTORY_METHOD actions to redirect to the
+	 * provided history object. This will prevent these actions from reaching your
+	 * reducer or any middleware that comes after this one.
+	 */
+	function routerMiddleware(history) {
+	  return function () {
+	    return function (next) {
+	      return function (action) {
+	        if (action.type !== _actions.CALL_HISTORY_METHOD) {
+	          return next(action);
+	        }
+	
+	        var _action$payload = action.payload,
+	            method = _action$payload.method,
+	            args = _action$payload.args;
+	
+	        history[method].apply(history, _toConsumableArray(args));
+	      };
+	    };
+	  };
+	}
+
+/***/ },
+/* 267 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var redux = __webpack_require__(179);
+	var combineReducers = redux.combineReducers;
+	var createStore = redux.createStore;
+	var applyMiddleware = redux.applyMiddleware;
+	var thunk = __webpack_require__(268).default;
+	var routerReducer = __webpack_require__(262).routerReducer;
+	
+	var reducers = __webpack_require__(269);
+	
+	var store = createStore(combineReducers({ search: reducers.searchReducer, routing: routerReducer }), applyMiddleware(thunk));
+	module.exports = store;
+
+/***/ },
+/* 268 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -28855,12 +29225,12 @@
 	exports['default'] = thunk;
 
 /***/ },
-/* 264 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var actions = __webpack_require__(265);
+	var actions = __webpack_require__(270);
 	
 	var initialState = {
 	    keyword: null,
@@ -28869,7 +29239,8 @@
 	    list: [],
 	    error: null,
 	    clickedBar: null,
-	    index: []
+	    index: [],
+	    path: null
 	};
 	
 	var searchReducer = function searchReducer(state, action) {
@@ -28882,7 +29253,8 @@
 	            list: action.list,
 	            error: null,
 	            clickedBar: null,
-	            index: []
+	            index: [],
+	            path: action.path
 	        });
 	    } else if (action.type === actions.SEARCH_VIDEOS_ERROR) {
 	        return Object.assign({}, state, {
@@ -28905,8 +29277,11 @@
 	    } else if (action.type === actions.CLICK_BAR) {
 	        return Object.assign({}, state, {
 	            clickedBar: action.clickedBar,
-	            index: []
+	            index: [],
+	            path: action.path
 	        });
+	    } else if (action.type === actions.CLEAR) {
+	        return initialState;
 	    }
 	    return state;
 	};
@@ -28914,21 +29289,22 @@
 	exports.searchReducer = searchReducer;
 
 /***/ },
-/* 265 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	__webpack_require__(266);
+	__webpack_require__(271);
 	
 	var SEARCH_VIDEOS_SUCCESS = 'SEARCH_VIDEOS_SUCCESS';
-	var searchVideosSuccess = function searchVideosSuccess(keyword, after, before, list) {
+	var searchVideosSuccess = function searchVideosSuccess(keyword, after, before, list, path) {
 	    return {
 	        type: SEARCH_VIDEOS_SUCCESS,
 	        keyword: keyword,
 	        after: after,
 	        before: before,
-	        list: list
+	        list: list,
+	        path: path
 	    };
 	};
 	
@@ -28960,14 +29336,22 @@
 	};
 	
 	var CLICK_BAR = 'CLICK_BAR';
-	var clickBar = function clickBar(clickedBar) {
+	var clickBar = function clickBar(clickedBar, path) {
 	    return {
 	        type: CLICK_BAR,
-	        clickedBar: clickedBar
+	        clickedBar: clickedBar,
+	        path: path
 	    };
 	};
 	
-	var searchVideos = function searchVideos(keyword, after, before) {
+	var CLEAR = 'CLEAR';
+	var clear = function clear() {
+	    return {
+	        type: CLEAR
+	    };
+	};
+	
+	var searchVideos = function searchVideos(keyword, after, before, path) {
 	    var url = 'https://www.googleapis.com/youtube/v3/search?';
 	    var publishedAfter = '';
 	    var publishedBefore = '';
@@ -28989,7 +29373,7 @@
 	            return response.json();
 	        }).then(function (data) {
 	            var items = data.items;
-	            return dispatch(searchVideosSuccess(keyword, after, before, items));
+	            return dispatch(searchVideosSuccess(keyword, after, before, items, path));
 	        }).catch(function (error) {
 	            return dispatch(searchVideosError(keyword, after, before, error));
 	        });
@@ -29007,21 +29391,23 @@
 	exports.CLICK_BAR = CLICK_BAR;
 	exports.clickBar = clickBar;
 	exports.searchVideos = searchVideos;
+	exports.CLEAR = CLEAR;
+	exports.clear = clear;
 
 /***/ },
-/* 266 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// the whatwg-fetch polyfill installs the fetch() function
 	// on the global object (window or self)
 	//
 	// Return that as the export for use in Webpack, Browserify etc.
-	__webpack_require__(267);
+	__webpack_require__(272);
 	module.exports = self.fetch.bind(self);
 
 
 /***/ },
-/* 267 */
+/* 272 */
 /***/ function(module, exports) {
 
 	(function(self) {
@@ -29460,7 +29846,7 @@
 
 
 /***/ },
-/* 268 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29468,8 +29854,8 @@
 	var React = __webpack_require__(1);
 	var router = __webpack_require__(199);
 	var Link = router.Link;
-	var Form = __webpack_require__(269);
-	var actions = __webpack_require__(265);
+	var Form = __webpack_require__(274);
+	var actions = __webpack_require__(270);
 	var connect = __webpack_require__(172).connect;
 	
 	var Search = React.createClass({
@@ -29481,11 +29867,11 @@
 	        var keyword = this.refs.search.value.trim();
 	        var after = this.refs.after.value;
 	        var before = this.refs.before.value;
+	
+	        var path = this.getURLpath(keyword, after, before, undefined);
 	        if (keyword) {
-	            this.props.dispatch(actions.searchVideos(keyword, after, before));
-	            var path = this.getURLpath(keyword, after, before);
-	            this.props.history.push(path);
-	        }
+	            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	        } else this.props.dispatch(actions.clear());
 	    },
 	    //click on 'View' or 'Close' button to open or close video
 	    playVideo: function playVideo(event) {
@@ -29497,18 +29883,17 @@
 	    //do filter basedon published date
 	    filter: function filter(event) {
 	        var i = parseInt(event.target.closest('tr').getAttribute('data-index'));
-	        var after = this.value[i].timeStart;
-	        var before;
-	        if (i < 4) before = this.value[i + 1].timeStart;else before = this.maxDateISO;
-	        this.props.dispatch(actions.clickBar(i));
-	        var path = this.getURLpath(this.props.keyword, after, before);
-	        this.props.history.push(path);
+	        var after = this.props.after;
+	        var before = this.props.before;
+	        var path = this.getURLpath(this.props.keyword, after, before, i);
+	        this.props.dispatch(actions.clickBar(i, path));
 	    },
-	    getURLpath: function getURLpath(keyword, after, before) {
+	    getURLpath: function getURLpath(keyword, after, before, clickedBar) {
 	        var path = '';
 	        if (keyword) {
 	            path = '/?search/q=' + keyword;
-	            if (after && !before) path += '&span=' + after + '-present';else if (!after && before) path += '&span=2005-04-23' + after;else if (after && before) path += '&span=' + after + '-' + before;
+	            if (after && !before) path += '&span=' + after + '_present';else if (!after && before) path += '&span=2005-04-23_' + before;else if (after && before) path += '&span=' + after + '_' + before;
+	            if (clickedBar !== null && clickedBar !== undefined) path += '&filter=' + clickedBar;
 	        }
 	        return path;
 	    },
@@ -29569,8 +29954,52 @@
 	        var webName = webTitle.split(' ');
 	        event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
 	    },
+	    componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
+	        console.log(this.props);
+	        console.log(nextProps);
+	        var path;
+	        if (!this.props.path && nextProps.path) {
+	            console.log('first props');
+	            path = this.getURLpath(nextProps.keyword, nextProps.after, nextProps.before, nextProps.clickedBar);
+	            this.props.history.push(path);
+	        }
+	        if (this.props.path && this.props.path !== nextProps.path) {
+	            console.log('this is different from next Props');
+	            path = this.getURLpath(nextProps.keyword, nextProps.after, nextProps.before, nextProps.clickedBar);
+	            this.props.history.push(path);
+	        }
+	        if (this.props.path && this.props.path === nextProps.path && this.props.path !== nextProps.location.pathname + nextProps.location.search) {
+	            var q = nextProps.location.query;
+	            var keyword = q['search/q'];
+	            var span, after, before, filter;
+	            if (q.span) {
+	                span = q.span.split('_');
+	                after = span[0];
+	                before = span[1];
+	            }
+	            if (q.filter) filter = q.filter;
+	
+	            if (keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
+	                if (keyword === undefined) this.props.dispatch(actions.clear());else {
+	                    if (after === undefined || after === '2005-04-23') after = '';
+	                    if (before === undefined || before === 'present') before = '';
+	
+	                    path = this.getURLpath(keyword, after, before, undefined);
+	                    if (keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
+	                        this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
+	                    } else this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	                }
+	            } else {
+	                path = this.getURLpath(keyword, after, before, parseInt(filter));
+	                this.props.dispatch(actions.clickBar(parseInt(filter), path));
+	            }
+	        }
+	    },
 	    //run component
 	    render: function render() {
+	        console.log('render');
+	        console.log('keyword: ', this.props.keyword, ' after: ', this.props.after, ' before: ', this.props.before, ' clickedBar: ', this.props.clickedBar);
+	
 	        //pass results list to Results component
 	        if (this.props.list.length) this.calcChartValue();
 	        var results = React.createElement(Results, { list: this.props.list, keyword: this.props.keyword,
@@ -29586,7 +30015,7 @@
 	        var day = String(now.getUTCDate());
 	        if (day.length < 2) day = '0' + day;
 	
-	        var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before);
+	        var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before, this.props.clickedBar);
 	
 	        return React.createElement(
 	            'div',
@@ -29816,7 +30245,7 @@
 	                                { className: 'value bar', style: this.props.value[0].barHeight },
 	                                React.createElement(
 	                                    Link,
-	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[0].timeStart + ',' + this.props.value[1].timeStart },
+	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=0' },
 	                                    React.createElement(
 	                                        'p',
 	                                        null,
@@ -29838,7 +30267,7 @@
 	                                { className: 'value bar', style: this.props.value[1].barHeight },
 	                                React.createElement(
 	                                    Link,
-	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[1].timeStart + ',' + this.props.value[2].timeStart },
+	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=1' },
 	                                    React.createElement(
 	                                        'p',
 	                                        null,
@@ -29860,7 +30289,7 @@
 	                                { className: 'value bar', style: this.props.value[2].barHeight },
 	                                React.createElement(
 	                                    Link,
-	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[2].timeStart + ',' + this.props.value[3].timeStart },
+	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=2' },
 	                                    React.createElement(
 	                                        'p',
 	                                        null,
@@ -29882,7 +30311,7 @@
 	                                { className: 'value bar', style: this.props.value[3].barHeight },
 	                                React.createElement(
 	                                    Link,
-	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[3].timeStart + ',' + this.props.value[4].timeStart },
+	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=3' },
 	                                    React.createElement(
 	                                        'p',
 	                                        null,
@@ -29909,7 +30338,7 @@
 	                                { className: 'value bar', style: this.props.value[4].barHeight },
 	                                React.createElement(
 	                                    Link,
-	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.value[4].timeStart + ',' + this.props.maxDateISO },
+	                                    { to: "/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=4' },
 	                                    React.createElement(
 	                                        'p',
 	                                        null,
@@ -30058,13 +30487,14 @@
 	
 	var mapStateToProps = function mapStateToProps(state, props) {
 	    return {
-	        keyword: state.keyword,
-	        after: state.after,
-	        before: state.before,
-	        list: state.list,
-	        index: state.index,
-	        clickedBar: state.clickedBar,
-	        error: state.error
+	        keyword: state.search.keyword,
+	        after: state.search.after,
+	        before: state.search.before,
+	        list: state.search.list,
+	        path: state.search.path,
+	        index: state.search.index,
+	        clickedBar: state.search.clickedBar,
+	        error: state.search.error
 	    };
 	};
 	
@@ -30076,7 +30506,7 @@
 	exports.PlayVideo = PlayVideo;
 
 /***/ },
-/* 269 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30093,7 +30523,7 @@
 	
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 	
-	var _getFormData = __webpack_require__(270);
+	var _getFormData = __webpack_require__(275);
 	
 	var _getFormData2 = _interopRequireDefault(_getFormData);
 	
@@ -30207,7 +30637,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 270 */
+/* 275 */
 /***/ function(module, exports) {
 
 	'use strict';
