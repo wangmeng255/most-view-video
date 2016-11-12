@@ -29974,20 +29974,24 @@
 	                before = span[1];
 	            }
 	            if (q.filter) filter = q.filter;
+	            if (after === undefined || after === '2005-04-23') after = '';
+	            if (before === undefined || before === 'present') before = '';
+	
+	            if (keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
+	                if (filter === undefined) {
+	                    path = this.getURLpath(keyword, after, before, undefined);
+	                    this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
+	                } else {
+	                    path = this.getURLpath(keyword, after, before, parseInt(filter));
+	                    this.props.dispatch(actions.clickBar(parseInt(filter), path));
+	                }
+	            }
 	
 	            if (keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
 	                if (keyword === undefined) this.props.dispatch(actions.clear());else {
-	                    if (after === undefined || after === '2005-04-23') after = '';
-	                    if (before === undefined || before === 'present') before = '';
-	
 	                    path = this.getURLpath(keyword, after, before, undefined);
-	                    if (keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
-	                        this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
-	                    } else this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	                    this.props.dispatch(actions.searchVideos(keyword, after, before, path));
 	                }
-	            } else {
-	                path = this.getURLpath(keyword, after, before, parseInt(filter));
-	                this.props.dispatch(actions.clickBar(parseInt(filter), path));
 	            }
 	        }
 	    },
