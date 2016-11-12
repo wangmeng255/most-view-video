@@ -29955,16 +29955,12 @@
 	        event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
 	    },
 	    componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
-	        console.log(this.props);
-	        console.log(nextProps);
 	        var path;
 	        if (!this.props.path && nextProps.path) {
-	            console.log('first props');
 	            path = this.getURLpath(nextProps.keyword, nextProps.after, nextProps.before, nextProps.clickedBar);
 	            this.props.history.push(path);
 	        }
 	        if (this.props.path && this.props.path !== nextProps.path) {
-	            console.log('this is different from next Props');
 	            path = this.getURLpath(nextProps.keyword, nextProps.after, nextProps.before, nextProps.clickedBar);
 	            this.props.history.push(path);
 	        }
@@ -29997,9 +29993,6 @@
 	    },
 	    //run component
 	    render: function render() {
-	        console.log('render');
-	        console.log('keyword: ', this.props.keyword, ' after: ', this.props.after, ' before: ', this.props.before, ' clickedBar: ', this.props.clickedBar);
-	
 	        //pass results list to Results component
 	        if (this.props.list.length) this.calcChartValue();
 	        var results = React.createElement(Results, { list: this.props.list, keyword: this.props.keyword,
