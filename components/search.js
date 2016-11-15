@@ -1,54 +1,12 @@
-var React = require('react');
-var router = require('react-router');
-var Link = router.Link;
-var Form = require('react-router-form');
 var actions = require('../actions/actions');
 var connect = require('react-redux').connect;
+var Form = require('react-router-form');
+var React = require('react');
+var router = require('react-router');
+
+var Link = router.Link;
 
 var Search = React.createClass({
-    //do searching keyword in YouTube API
-    Search: function(event) {
-        event.preventDefault();
-        var keyword = this.refs.search.value.trim();
-        var after = this.refs.after.value;
-        var before = this.refs.before.value;
-        
-        var path = this.getURLpath(keyword, after, before, undefined);
-        if(keyword) {
-            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
-        }
-        else this.props.dispatch(actions.clear());
-    },
-    //click on 'View' or 'Close' button to open or close video
-    playVideo: function(event) {
-        event.preventDefault();
-        var isView = event.target.text === 'View'? true: false;
-        var index = event.target.getAttribute('data-index');
-        if(isView) this.props.dispatch(actions.playVideo(parseInt(index)));
-        else this.props.dispatch(actions.closeVideo(parseInt(index)));
-    },
-    //do filter basedon published date
-    filter: function(event) {
-        var i = parseInt(event.target.closest('tr').getAttribute('data-index'));
-        var after = this.props.after;
-        var before = this.props.before;
-        var path = this.getURLpath(this.props.keyword, after, before, i);
-        this.props.dispatch(actions.clickBar(i, path));
-    },
-    getURLpath: function(keyword, after, before, clickedBar) {
-        var path = '';
-        if(keyword) {
-            path = '/?search/q=' + keyword;
-            if(after && !before) 
-                path += '&span=' + after + '_present';
-            else if(!after && before) 
-                path += '&span=2005-04-23_' + before;
-            else if(after && before) 
-                path += '&span=' + after + '_'+ before;
-            if(clickedBar !== null && clickedBar !== undefined) path += '&filter=' + clickedBar;
-        } 
-        return path;
-    },
     calcChartValue: function() {
         var timeList = [];
         var minDate;
@@ -90,72 +48,141 @@ var Search = React.createClass({
         this.maxDateISO = this.maxDate.toISOString().split('T')[0];
         this.maxDate = (tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4]);
     },
-    Share: function(event) {
-        var url = window.location.href;
-        var title = document.title;
-        var shareUrl = {
-            Facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
-            Twitter: "https://twitter.com/home?status=" + url + " " + title,
-            Linkedin: "https://www.linkedin.com/shareArticle?mini=true&url=" + url,
-            GooglePlus: "https://plus.google.com/share?url=" + url,
-            Pinterest: "https://pinterest.com/pin/create/link/?url=" + url
-        };
-        var webTitle = event.target.closest('a').getAttribute('title');
-        var webName = webTitle.split(' ');
-        event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
+    componentDidMount: function() {
+        var params = this.getURLparams(this.props.location.query);
+        var keyword = params.keyword;
+        var after = params.after;
+        var before = params.before;
+        var filter = params.filter;
+        
+        if(keyword) {
+            this.refs.search.value = keyword;
+            if(after) this.refs.after.value = after;
+            if(before) this.refs.before.value = before;
+            var path = this.getURLpath(keyword, after, before, filter);
+            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+        }
     },
     componentWillUpdate: function(nextProps, nextState) {
         var path;
-        if(!this.props.path && nextProps.path) { 
-            path = this.getURLpath(nextProps.keyword, nextProps.after, nextProps.before, nextProps.clickedBar);
-            this.props.history.push(path);
-        }
-        if(this.props.path && (this.props.path !== nextProps.path)) {
-            path = this.getURLpath(nextProps.keyword, nextProps.after, nextProps.before, nextProps.clickedBar);
-            this.props.history.push(path);
+        if(this.props.path !== nextProps.path) {
+            this.props.history.push(nextProps.path);
         }
         if(this.props.path && (this.props.path === nextProps.path) && (this.props.path !== (nextProps.location.pathname + nextProps.location.search))) {
-            var q = nextProps.location.query;
-            var keyword = q['search/q'];
-            var span, after, before, filter;
-            if(q.span) {
-                span = q.span.split('_') ;
-                after = span[0];
-                before = span[1];
+            path = nextProps.location.pathname + nextProps.location.search;
+            if(!nextProps.location.query.q) 
+            {
+                this.props.dispatch(actions.clear());
+                this.refs.search.value = '';
+                this.refs.after.value = '';
+                this.refs.before.value = '';
             }
-            if(q.filter) filter = q.filter;
-            if(after === undefined || after === '2005-04-23') after = '';
-            if(before === undefined || before === 'present') before = '';
-            
-            if(keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
-                if(filter === undefined) {
-                    path = this.getURLpath(keyword, after, before, undefined);
-                    this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
+            else {
+                var params = this.getURLparams(nextProps.location.query);
+                var keyword = params.keyword;
+                var after = params.after;
+                var before = params.before;
+                var filter = params.filter;
+                
+                if(keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
+                    if(filter === undefined) {
+                        this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
+                    }
+                    else {
+                        this.props.dispatch(actions.clickBar(path));
+                    }
                 }
-                else {
-                    path = this.getURLpath(keyword, after, before, parseInt(filter));
-                    this.props.dispatch(actions.clickBar(parseInt(filter), path));
-                }
-            }
-            
-            if(keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
-                if(keyword === undefined) this.props.dispatch(actions.clear());
-                else {
-                    path = this.getURLpath(keyword, after, before, undefined);
+                
+                if(keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
                     this.props.dispatch(actions.searchVideos(keyword, after, before, path));
                 }
             }
         }
     },
+    //do filter basedon published date
+    Filter: function(event) {
+        this.clickedBar = parseInt(event.target.closest('tr').getAttribute('data-index'));
+        var after = this.props.after;
+        var before = this.props.before;
+        var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
+        this.props.dispatch(actions.clickBar(path));
+    },
+    getURLpath: function(keyword, after, before, filter) {
+        var path = '';
+        if(keyword) {
+            path = '/search?q=' + keyword;
+            if(after && !before) 
+                path += '&after=' + after + '&before=present';
+            else if(!after && before) 
+                path += '&after=2005-04-23&before=' + before;
+            else if(after && before) 
+                path += '&after=' + after + '&before='+ before;
+            if(filter !== null && filter !== undefined) path += '&filter=' + filter;
+        } 
+        return path;
+    },
+    getURLparams: function(query) {
+        var params = {};
+        params.keyword = query.q;
+        params.after = query.after;
+        params.before = query.before;
+        if(query.filter) params.filter = parseInt(query.filter);
+        
+        if(params.after === undefined || params.after === '2005-04-23') params.after = '';
+        if(params.before === undefined || params.before === 'present') params.before = '';
+        
+        return params;
+    },
+    //click on 'View' or 'Close' button to open or close video
+    playVideo: function(event) {
+        event.preventDefault();
+        var isView = event.target.text === 'View'? true: false;
+        var index = event.target.getAttribute('data-index');
+        if(isView) this.props.dispatch(actions.playVideo(parseInt(index)));
+        else this.props.dispatch(actions.closeVideo(parseInt(index)));
+    },
+    Share: function(event) {
+        var url = encodeURIComponent(window.location.href);
+        var title = document.title;
+        var shareUrl = {
+            Facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
+            GooglePlus: "https://plus.google.com/share?url=" + url,
+            Linkedin: "https://www.linkedin.com/shareArticle?mini=true&url=" + url,
+            Pinterest: "https://pinterest.com/pin/create/link/?url=" + url,
+            Twitter: "https://twitter.com/home?status=" + url + " " + title
+        };
+        var webTitle = event.target.closest('a').getAttribute('title');
+        var webName = webTitle.split(' ');
+        event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
+    },
+    //do searching keyword in YouTube API
+    Search: function(event) {
+        event.preventDefault();
+        var keyword = this.refs.search.value.trim();
+        var after = this.refs.after.value;
+        var before = this.refs.before.value;
+        
+        var path = this.getURLpath(keyword, after, before, undefined);
+        if(keyword) {
+            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+        }
+        else {
+            this.props.dispatch(actions.clear());
+        }
+    },
     //run component
     render: function() {
+        var params = this.getURLparams(this.props.location.query);
+        var keyword = params.keyword;
+        var after = params.after;
+        var before = params.before;
+        var filter = params.filter;
+        
         //pass results list to Results component
         if(this.props.list.length) this.calcChartValue();
-        var results = <Results list={this.props.list} keyword={this.props.keyword} 
-                               index={this.props.index} onClick={this.playVideo}
-                               after={this.props.after} before={this.props.before} 
-                               error={this.props.error} clickedBar={this.props.clickedBar}
-                               filter={this.filter} maxDate={this.maxDate} maxDateISO={this.maxDateISO} 
+        var results = <Results list={this.props.list} keyword={keyword} index={this.props.index} onClick={this.playVideo}
+                               after={after} before={before} error={this.props.error} clickedBar={filter}
+                               Filter={this.Filter} maxDate={this.maxDate} maxDateISO={this.maxDateISO} 
                                value={this.value} spanLength={this.spanLength} />;;
         //calculate current date to set max for date input
         var now = new Date;
@@ -164,7 +191,7 @@ var Search = React.createClass({
         var day = String(now.getUTCDate());
         if(day.length < 2) day = '0' + day;
         
-        var path = this.getURLpath(this.props.keyword, this.props.after, this.props.before, this.props.clickedBar);
+        var path = this.getURLpath(keyword,after, before, this.clickedBar);
         
         return (
             <div>
@@ -222,7 +249,7 @@ var Results = function(props) {
     // return chart and results
     var chart = <Chart list={props.list} after={props.after} before={props.before} 
                  keyword={props.keyword} onClick={props.onClick} index={props.index} 
-                 clickedBar={props.clickedBar} filter={props.filter} maxDate={props.maxDate}
+                 clickedBar={props.clickedBar} Filter={props.Filter} maxDate={props.maxDate} 
                  maxDateISO={props.maxDateISO} value={props.value} spanLength={props.spanLength} />;
     return (
         <section>
@@ -288,43 +315,43 @@ var Chart = React.createClass({
                     <table id="q-graph">
                         <caption>Videos Filtered by Published Date</caption>
                         <tbody>
-                            <tr className="qtr" id="q1" onClick={this.props.filter} data-index="0">
+                            <tr className="qtr" id="q1" onClick={this.props.Filter} data-index="0">
                                 <th scope="row">{this.props.value[0].time}</th>
                                 <td className="value bar" style={this.props.value[0].barHeight}>
-                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=0'} >
+                                    <Link to={"/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=0'} >
                                         <p>{this.props.value[0].length}</p>
                                     </Link>
                                 </td>
                             </tr>
-                            <tr className="qtr" id="q2" onClick={this.props.filter} data-index="1">
+                            <tr className="qtr" id="q2" onClick={this.props.Filter} data-index="1">
                                 <th scope="row">{this.props.value[1].time}</th>
                                 <td className="value bar" style={this.props.value[1].barHeight}>
-                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=1'} >
+                                    <Link to={"/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=1'} >
                                         <p>{this.props.value[1].length}</p>
                                     </Link>
                                 </td>
                             </tr>
-                            <tr className="qtr" id="q3" onClick={this.props.filter} data-index="2">
+                            <tr className="qtr" id="q3" onClick={this.props.Filter} data-index="2">
                                 <th scope="row">{this.props.value[2].time}</th>
                                 <td className="value bar" style={this.props.value[2].barHeight}>
-                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=2'} >
+                                    <Link to={"/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=2'} >
                                         <p>{this.props.value[2].length}</p>
                                     </Link>
                                 </td>
                             </tr>
-                            <tr className="qtr" id="q4" onClick={this.props.filter} data-index="3">
+                            <tr className="qtr" id="q4" onClick={this.props.Filter} data-index="3">
                                 <th scope="row">{this.props.value[3].time}</th>
                                 <td className="value bar" style={this.props.value[3].barHeight}>
-                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=3'} >
+                                    <Link to={"/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=3'} >
                                         <p>{this.props.value[3].length}</p>
                                     </Link>
                                 </td>
                             </tr>
-                            <tr className="qtr" id="q5" onClick={this.props.filter} data-index="4">
+                            <tr className="qtr" id="q5" onClick={this.props.Filter} data-index="4">
                                 <th scope="row">{this.props.value[4].time}</th>
                                 <th scope="row">{this.props.maxDate}</th>
                                 <td className="value bar" style={this.props.value[4].barHeight}>
-                                    <Link to={"/?search/q=" + this.props.keyword + "&span=" + this.props.after + '_' + this.props.before + '&filter=4'} >
+                                    <Link to={"/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=4'} >
                                         <p>{this.props.value[4].length}</p>
                                     </Link>
                                 </td>
@@ -387,14 +414,13 @@ var PlayVideo = function(props) {
 
 var mapStateToProps = function(state, props) {
     return {
-        keyword: state.search.keyword,
-        after: state.search.after,
-        before: state.search.before,
-        list: state.search.list,
-        path: state.search.path,
-        index: state.search.index,
-        clickedBar: state.search.clickedBar,
-        error: state.search.error
+        keyword: state.keyword,
+        after: state.after,
+        before: state.before,
+        list: state.list,
+        path: state.path,
+        index: state.index,
+        error: state.error
     };
 };
 

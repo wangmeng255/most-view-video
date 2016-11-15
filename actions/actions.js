@@ -40,10 +40,9 @@ var closeVideo = function(index) {
 };
 
 var CLICK_BAR = 'CLICK_BAR';
-var clickBar = function(clickedBar, path) {
+var clickBar = function(path) {
     return {
         type: CLICK_BAR,
-        clickedBar: clickedBar,
         path: path
     }
 };
