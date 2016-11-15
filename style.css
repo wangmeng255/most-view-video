@@ -301,9 +301,14 @@ a:hover {
 }
 .mn-social-bottom-c {
     position: fixed;
-    left: 1rem;
+    left: -3rem;
     top: 10rem;
     text-align: center;
+}
+.visible {
+    left: 0.5rem;
+    transition: transform ease 250ms;
+    transform: translate3d(0.5rem, 0, 0);
 }
 .mn-social-bottom {
     background: #f5f5f5;
@@ -324,4 +329,27 @@ a:hover {
     fill: #ffffff;
     top: -3px;
     cursor: pointer;
+}
+#share {
+    transform: rotate(90deg);
+    position: fixed;
+    top: 10rem;
+    padding: 6px;
+    left: -1rem;
+    color: rgb(230, 33, 23);
+    background-color: #fff;
+    font-size: 1.1rem;
+    font-family: 'Julius Sans One', sans-serif;
+    font-weight: bold;
+    border: solid 1px #808080;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+}
+#share:hover {
+    border: 3px solid #808080;
+    border-bottom: none;
+    cursor: pointer;
+}
+#share:focus {
+    outline: none;
 }
