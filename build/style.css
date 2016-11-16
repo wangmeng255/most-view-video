@@ -13,10 +13,11 @@ h2 {
     letter-spacing: 0.05rem
 }
 h1 + p {
-    color: rgb(230, 33, 23);
+    color: white;
+    text-shadow: 2px 2px 1px rgb(230, 33, 23);
     font-weight: bold;
     text-align: center;
-    font-family: 'Source Sans Pro', sans-serif;;
+    font-family: 'Source Sans Pro', sans-serif;
     font-size: 1.2rem;
 }
 #logo {
@@ -255,14 +256,18 @@ li .video-info p {
     text-align: justify;
 }
 li .publish-date-time {
-    color: #983434;
+    text-shadow: -1px -1px #983434, 1px -1px #983434, -1px 1px #983434, 1px 1px #983434;
+    font-weight: bolder;
+    color: white;
 }
 .channel-id {
     color: #cc1814;
     text-decoration: none;
 }
 a:hover {
+    text-shadow: -1px -1px #983434, 1px -1px #983434, -1px 1px #983434, 1px 1px #983434;
     text-decoration: underline;
+    color: white;
 }
 .video-info a:nth-of-type(2) {
     position: absolute;
