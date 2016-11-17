@@ -29544,7 +29544,7 @@
 	            if (before) this.refs.before.value = before;
 	            var path = this.getURLpath(keyword, after, before, filter);
 	            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
-	        }
+	        } else this.props.dispatch(actions.searchVideos('', '', '', '/'));
 	    },
 	    componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
 	        var path;
@@ -29585,9 +29585,6 @@
 	        var before = this.props.before;
 	        var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
 	        this.props.dispatch(actions.clickBar(path));
-	    },
-	    getBlur: function getBlur(event) {
-	        event.target.classList.remove('show');
 	    },
 	    //do filter basedon published date
 	    getURLpath: function getURLpath(keyword, after, before, filter) {
@@ -29652,7 +29649,7 @@
 	                    before = before[0];
 	                    var beforeDate;
 	                    if (before) beforeDate = new Date(before);
-	                    if (beforeDate.toString() !== 'Invalid Date') {
+	                    if (beforeDate.toString() !== 'Invalid Date' && beforeDate > afterDate) {
 	                        popupBefore.classList.remove('show');
 	                    }
 	                }
@@ -29747,8 +29744,8 @@
 	                            onChange: this.Search, placeholder: 'yyyy-mm-dd' }),
 	                        React.createElement(
 	                            'span',
-	                            { className: 'popuptext', ref: 'afterPopuptext', onBlur: this.getBlur },
-	                            'Invalid date format'
+	                            { className: 'popuptext', ref: 'afterPopuptext' },
+	                            'Invalid date'
 	                        )
 	                    ),
 	                    React.createElement(
@@ -29763,8 +29760,8 @@
 	                            onChange: this.Search, placeholder: 'yyyy-mm-dd' }),
 	                        React.createElement(
 	                            'span',
-	                            { className: 'popuptext', ref: 'beforePopuptext', onBlur: this.getBlur },
-	                            'Invalid date format'
+	                            { className: 'popuptext', ref: 'beforePopuptext' },
+	                            'Invalid date'
 	                        )
 	                    )
 	                )

@@ -62,6 +62,7 @@ var Search = React.createClass({
             var path = this.getURLpath(keyword, after, before, filter);
             this.props.dispatch(actions.searchVideos(keyword, after, before, path));
         }
+        else this.props.dispatch(actions.searchVideos('', '', '', '/'));
     },
     componentWillUpdate: function(nextProps, nextState) {
         var path;
