@@ -29579,7 +29579,6 @@
 	            }
 	        }
 	    },
-	    //do filter basedon published date
 	    Filter: function Filter(event) {
 	        this.clickedBar = parseInt(event.target.closest('tr').getAttribute('data-index'));
 	        var after = this.props.after;
@@ -29587,6 +29586,10 @@
 	        var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
 	        this.props.dispatch(actions.clickBar(path));
 	    },
+	    getBlur: function getBlur(event) {
+	        event.target.classList.remove('show');
+	    },
+	    //do filter basedon published date
 	    getURLpath: function getURLpath(keyword, after, before, filter) {
 	        var path = '';
 	        if (keyword) {
@@ -29619,14 +29622,46 @@
 	    Search: function Search(event) {
 	        event.preventDefault();
 	        var keyword = this.refs.search.value.trim();
-	        var after = this.refs.after.value;
-	        var before = this.refs.before.value;
+	        var after = this.refs.after.value.trim();
+	        var before = this.refs.before.value.trim();
 	
-	        var path = this.getURLpath(keyword, after, before, undefined);
+	        if (after) after = after.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
+	        if (before) before = before.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
+	
+	        var popupAfter = this.refs.afterPopuptext;
+	        var popupBefore = this.refs.beforePopuptext;
+	
 	        if (keyword) {
-	            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	            if (after === null || before === null) {
+	                if (after === null) {
+	                    popupAfter.classList.add('show');
+	                }
+	                if (before === null) {
+	                    popupBefore.classList.add('show');
+	                }
+	            } else {
+	                if (after) {
+	                    after = after[0];
+	                    var afterDate = new Date(after);
+	                    if (afterDate.toString() !== 'Invalid Date') {
+	                        popupAfter.classList.remove('show');
+	                    }
+	                }
+	
+	                if (before) {
+	                    before = before[0];
+	                    var beforeDate;
+	                    if (before) beforeDate = new Date(before);
+	                    if (beforeDate.toString() !== 'Invalid Date') {
+	                        popupBefore.classList.remove('show');
+	                    }
+	                }
+	
+	                var path = this.getURLpath(keyword, after, before, undefined);
+	                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	            }
 	        } else {
-	            this.props.dispatch(actions.clear());
+	            if (this.props.list.length) this.props.dispatch(actions.clear());
 	        }
 	    },
 	    Share: function Share(event) {
@@ -29705,13 +29740,33 @@
 	                        { htmlFor: 'after' },
 	                        'Time span '
 	                    ),
-	                    React.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day, onChange: this.Search }),
+	                    React.createElement(
+	                        'div',
+	                        { className: 'popup' },
+	                        React.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day,
+	                            onChange: this.Search, placeholder: 'yyyy-mm-dd' }),
+	                        React.createElement(
+	                            'span',
+	                            { className: 'popuptext', ref: 'afterPopuptext', onBlur: this.getBlur },
+	                            'Invalid date format'
+	                        )
+	                    ),
 	                    React.createElement(
 	                        'label',
 	                        { htmlFor: 'before' },
-	                        ' --- '
+	                        ' — '
 	                    ),
-	                    React.createElement('input', { type: 'date', id: 'before', ref: 'before', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day, onChange: this.Search })
+	                    React.createElement(
+	                        'div',
+	                        { className: 'popup' },
+	                        React.createElement('input', { type: 'date', id: 'before', ref: 'before', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day,
+	                            onChange: this.Search, placeholder: 'yyyy-mm-dd' }),
+	                        React.createElement(
+	                            'span',
+	                            { className: 'popuptext', ref: 'beforePopuptext', onBlur: this.getBlur },
+	                            'Invalid date format'
+	                        )
+	                    )
 	                )
 	            ),
 	            React.createElement(

@@ -99,7 +99,6 @@ var Search = React.createClass({
             }
         }
     },
-    //do filter basedon published date
     Filter: function(event) {
         this.clickedBar = parseInt(event.target.closest('tr').getAttribute('data-index'));
         var after = this.props.after;
@@ -107,6 +106,7 @@ var Search = React.createClass({
         var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
         this.props.dispatch(actions.clickBar(path));
     },
+    //do filter basedon published date
     getURLpath: function(keyword, after, before, filter) {
         var path = '';
         if(keyword) {
@@ -145,15 +145,48 @@ var Search = React.createClass({
     Search: function(event) {
         event.preventDefault();
         var keyword = this.refs.search.value.trim();
-        var after = this.refs.after.value;
-        var before = this.refs.before.value;
+        var after = this.refs.after.value.trim();
+        var before = this.refs.before.value.trim();
         
-        var path = this.getURLpath(keyword, after, before, undefined);
+        if(after) after = after.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
+        if(before) before = before.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
+        
+        var popupAfter = this.refs.afterPopuptext;
+        var popupBefore = this.refs.beforePopuptext;
+        
         if(keyword) {
-            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+            if(after === null || before === null) {
+                if(after === null) {
+                    popupAfter.classList.add('show');
+                }
+                if(before === null) {
+                    popupBefore.classList.add('show');
+                }
+            }
+            else {
+                if(after) {
+                    after = after[0];
+                    var afterDate = new Date(after);
+                    if(afterDate.toString() !== 'Invalid Date') {
+                        popupAfter.classList.remove('show');
+                    }
+                }
+                    
+                if(before) {
+                    before = before[0];
+                    var beforeDate;
+                    if(before) beforeDate = new Date(before);
+                    if(beforeDate.toString() !== 'Invalid Date' && beforeDate > afterDate) {
+                        popupBefore.classList.remove('show');
+                    }
+                }
+                
+                var path = this.getURLpath(keyword, after, before, undefined);
+                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+            }
         }
         else {
-            this.props.dispatch(actions.clear());
+            if(this.props.list.length) this.props.dispatch(actions.clear());
         }
     },
     Share: function(event) {
@@ -210,12 +243,20 @@ var Search = React.createClass({
                 <p>Explore trending YouTube videos by published date.</p>
                 <Form to={path} method="POST">
                     <label htmlFor="keyword">Search Phrase</label>
-                    <input id="keyword" type="search" ref="search" placeholder="e.g. A|B -C = A or B but not C" onChange={this.Search}/>
+                    <input id="keyword" type="search" ref="search" placeholder="e.g. A|B -C = A or B but not C" onChange={this.Search} />
                     <div>
                         <label htmlFor="after">Time span </label>
-                        <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search} />
-                        <label htmlFor="before"> --- </label>
-                        <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} onChange={this.Search}/>
+                        <div className="popup">
+                            <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} 
+                                onChange={this.Search} placeholder="yyyy-mm-dd" />
+                            <span className="popuptext" ref="afterPopuptext">Invalid date</span>
+                        </div>
+                        <label htmlFor="before"> &#8212; </label>
+                        <div className="popup">
+                            <input type="date" id="before" ref="before" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} 
+                                onChange={this.Search} placeholder="yyyy-mm-dd" />
+                            <span className="popuptext" ref="beforePopuptext">Invalid date</span>
+                        </div>
                     </div>
                 </Form>
                 <button id="share" ref="share" onClick={this.Show}>Share</button>

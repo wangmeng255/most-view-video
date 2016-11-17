@@ -49,22 +49,63 @@ form div {
     font-size: 1.2rem;
     outline: none;
 }
+.popup {
+    flex-grow: 2;
+    position: relative;
+    display: inline-block;
+}
+.popup .popuptext {
+	visibility: hidden;
+	border: none;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 130%;
+    left: 55%;
+    margin-left: -80px;
+    min-width: 100%;
+    height: 1.25rem;
+    float: initial;
+}
+.popup .popuptext::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;  /* At the top of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #555 transparent;
+}
+/* Toggle this class - hide and show the popup */
+.popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 0.5s;
+    animation: fadeIn 0.5s;
+}
 #before, #after, form label {
     margin: 0;
 }
 #before, #after {
+    width: 100%;
     border: 2px solid rgba(0, 0, 0, 0.1);
     outline: none;
     border-radius: 5px;
-    flex-grow: 1;
 }
 form div label {
+    flex-grow: 1;
     font-size: 1rem;
     padding-right: 2rem;
     font-weight: bold;
 }
 form div label[for="before"] {
+    flex-grow: 1;
     padding: 0 2rem;
+    text-align: center;
 }
 form label[for="keyword"] {
     display: block;
@@ -82,8 +123,15 @@ ul, #error {
     margin: 0 auto;
     padding: 0;
 }
+#error {
+    width: 80%;
+}
 #error p {
     font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1.2rem;
+}
+#error p a {
+    color: #ffffff;
 }
 .chart {
     width: 80%;
