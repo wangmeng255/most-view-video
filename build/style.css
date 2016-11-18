@@ -304,7 +304,6 @@ li .video-info p {
     text-align: justify;
 }
 li .publish-date-time {
-    text-shadow: -1px -1px #983434, 1px -1px #983434, -1px 1px #983434, 1px 1px #983434;
     font-weight: bolder;
     color: white;
 }
@@ -323,7 +322,7 @@ a:hover {
     bottom: 0.5rem;
     font-size: 1.2rem;
     padding: 0.3rem 1rem;
-    color: #FFFFFF;
+    color: #ffffff;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
@@ -338,7 +337,8 @@ a:hover {
     text-decoration: none;
 }
 .video-info a:nth-of-type(2):hover {
-    background: #b11912;
+    color: #b11912;
+    background: #FFFFFF;
     border: solid 1px #8d140e;
 }
 .video-info a:nth-of-type(2):active {

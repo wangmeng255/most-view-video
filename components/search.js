@@ -155,39 +155,41 @@ var Search = React.createClass({
         var popupAfter = this.refs.afterPopuptext;
         var popupBefore = this.refs.beforePopuptext;
         
-        if(keyword) {
-            if(after === null || before === null) {
-                if(after === null) {
-                    popupAfter.classList.add('show');
-                }
-                if(before === null) {
-                    popupBefore.classList.add('show');
-                }
+        if(after === null || before === null) {
+            if(after === null) {
+                popupAfter.classList.add('show');
             }
-            else {
-                if(after) {
-                    after = after[0];
-                    var afterDate = new Date(after);
-                    if(afterDate.toString() !== 'Invalid Date') {
-                        popupAfter.classList.remove('show');
-                    }
-                }
-                    
-                if(before) {
-                    before = before[0];
-                    var beforeDate;
-                    if(before) beforeDate = new Date(before);
-                    if(beforeDate.toString() !== 'Invalid Date' && beforeDate > afterDate) {
-                        popupBefore.classList.remove('show');
-                    }
-                }
-                
-                var path = this.getURLpath(keyword, after, before, undefined);
-                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+            if(before === null) {
+                popupBefore.classList.add('show');
             }
         }
         else {
-            if(this.props.list.length) this.props.dispatch(actions.clear());
+            if(after === '') popupAfter.classList.remove('show');
+            else if(after) {
+                after = after[0];
+                var afterDate = new Date(after);
+                if(afterDate.toString() !== 'Invalid Date') {
+                    popupAfter.classList.remove('show');
+                }
+            }
+                
+            if(before === '') popupBefore.classList.remove('show');
+            else if(before) {
+                before = before[0];
+                var beforeDate;
+                if(before) beforeDate = new Date(before);
+                if(beforeDate.toString() !== 'Invalid Date' && beforeDate > afterDate) {
+                    popupBefore.classList.remove('show');
+                }
+            }
+            
+            if(keyword) {
+                var path = this.getURLpath(keyword, after, before, undefined);
+                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+            }
+            else {
+                if(this.props.list.length) this.props.dispatch(actions.clear());
+            }
         }
     },
     Share: function(event) {
