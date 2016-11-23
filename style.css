@@ -402,6 +402,8 @@ a:hover {
     border: 3px solid #808080;
     border-bottom: none;
     cursor: pointer;
+    color: #fff;
+    background-color: rgb(230, 33, 23);
 }
 #share:focus {
     outline: none;

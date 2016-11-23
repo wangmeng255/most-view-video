@@ -110,16 +110,14 @@ var Search = React.createClass({
     //do filter basedon published date
     getURLpath: function(keyword, after, before, filter) {
         var path = '';
-        if(keyword) {
-            path = '/search?q=' + keyword;
-            if(after && !before) 
-                path += '&after=' + after + '&before=present';
-            else if(!after && before) 
-                path += '&after=2005-04-23&before=' + before;
-            else if(after && before) 
-                path += '&after=' + after + '&before='+ before;
-            if(filter !== null && filter !== undefined) path += '&filter=' + filter;
-        } 
+        path = '/search?q=' + keyword;
+        if(after && !before) 
+            path += '&after=' + after + '&before=present';
+        else if(!after && before) 
+            path += '&after=2005-04-23&before=' + before;
+        else if(after && before) 
+            path += '&after=' + after + '&before='+ before;
+        if(filter !== null && filter !== undefined) path += '&filter=' + filter;
         return path;
     },
     getURLparams: function(query) {
@@ -183,12 +181,12 @@ var Search = React.createClass({
                 }
             }
             
-            if(keyword) {
-                var path = this.getURLpath(keyword, after, before, undefined);
-                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+            if(!keyword && !before && !after) {
+                if(this.props.list.length) this.props.dispatch(actions.clear());
             }
             else {
-                if(this.props.list.length) this.props.dispatch(actions.clear());
+                var path = this.getURLpath(keyword, after, before, undefined);
+                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
             }
         }
     },
