@@ -383,6 +383,10 @@ a:hover {
     top: -3px;
     cursor: pointer;
 }
+svg {
+    width: 22px;
+    height: 16px;
+}
 #share {
     transform: rotate(90deg);
     position: fixed;
@@ -407,4 +411,24 @@ a:hover {
 }
 #share:focus {
     outline: none;
+}
+@media only screen and (max-width: 480px), screen and (max-device-width: 480px) {
+    .mn-social-bottom {
+        width: 3.2rem;
+        height: 3.2rem;
+    }
+    .mn-social-bottom-c {
+        left: -5rem;
+    }
+    .visible {
+        left: 0.5rem;
+    }
+    svg {
+        width: 44px;
+        height: 32px;
+    }
+    #share {
+        left: -2rem;
+        font-size: 2.1rem;
+    }
 }
