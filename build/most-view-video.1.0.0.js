@@ -29544,7 +29544,7 @@
 	            if (before) this.refs.before.value = before;
 	            var path = this.getURLpath(keyword, after, before, filter);
 	            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
-	        } else this.props.dispatch(actions.searchVideos('', '', '', '/'));
+	        } else this.props.dispatch(actions.searchVideos('javascript', '', '', '/'));
 	    },
 	    componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
 	        var path;
@@ -29726,14 +29726,14 @@
 	                    { htmlFor: 'keyword' },
 	                    'Search Phrase'
 	                ),
-	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'e.g. A|B -C = A or B but not C', onChange: this.Search }),
+	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'javascript', onChange: this.Search }),
 	                React.createElement(
 	                    'div',
 	                    null,
 	                    React.createElement(
 	                        'label',
 	                        { htmlFor: 'after' },
-	                        'Time span '
+	                        'Time span: From '
 	                    ),
 	                    React.createElement(
 	                        'div',
@@ -29749,7 +29749,7 @@
 	                    React.createElement(
 	                        'label',
 	                        { htmlFor: 'before' },
-	                        ' — '
+	                        ' To '
 	                    ),
 	                    React.createElement(
 	                        'div',
@@ -29902,7 +29902,7 @@
 	        var header = '';
 	        var resultHeader;
 	        if (this.props.list.length) {
-	            if (!this.props.keyword) header = 'Most viewed videos ';else header = '"' + this.props.keyword + '"';
+	            if (!this.props.keyword) header = '"javascript"';else header = '"' + this.props.keyword + '"';
 	
 	            if (this.props.after) header = header + ' after ' + this.props.after;
 	            if (this.props.before) header = header + ' before ' + this.props.before;
