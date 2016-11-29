@@ -246,7 +246,8 @@ var Search = React.createClass({
                     <label htmlFor="keyword">Search Phrase</label>
                     <input id="keyword" type="search" ref="search" placeholder="javascript" onChange={this.Search} />
                     <div>
-                        <label htmlFor="after">Time span: From </label>
+                        <label>Time span: </label>
+                        <label htmlFor="after">From </label>
                         <div className="popup">
                             <input type="date" id="after" ref="after" min="2005-04-23" max={now.getUTCFullYear() + "-" + month + "-" + day} 
                                 onChange={this.Search} placeholder="yyyy-mm-dd" />

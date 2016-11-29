@@ -29,12 +29,13 @@ h1 + p {
 form {
     margin: 0 auto;
     max-width: 50rem;
-    padding: 0 10%;
+    padding: 0 10% 1.5% 10%;
     font-family:'Source Sans Pro', sans-serif;
 }
-form div {
+form > div {
     margin: 0.5rem 0;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     align-items: center;
     font-size: 0.8rem;
@@ -50,7 +51,7 @@ form div {
     outline: none;
 }
 .popup {
-    flex-grow: 2;
+    flex-grow: 3;
     position: relative;
     display: inline-block;
 }
@@ -91,7 +92,7 @@ form div {
     margin: 0;
 }
 #before, #after {
-    width: 100%;
+    width: 97%;
     border: 2px solid rgba(0, 0, 0, 0.1);
     outline: none;
     border-radius: 5px;
@@ -103,7 +104,6 @@ form div label {
     font-weight: bold;
 }
 form div label[for="before"] {
-    flex-grow: 1;
     padding: 0 2rem;
     text-align: center;
 }

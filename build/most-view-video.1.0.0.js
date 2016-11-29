@@ -29732,8 +29732,13 @@
 	                    null,
 	                    React.createElement(
 	                        'label',
+	                        null,
+	                        'Time span: '
+	                    ),
+	                    React.createElement(
+	                        'label',
 	                        { htmlFor: 'after' },
-	                        'Time span: From '
+	                        'From '
 	                    ),
 	                    React.createElement(
 	                        'div',
