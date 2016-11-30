@@ -9,7 +9,7 @@ I built this app drawing on my experience from searching videos in YouTube. Alth
 
 ## Use Case
 
-Why is this app useful? you can find videos with your searching keyword in which time span is most popular. You can watch the video or channel by clicking link in the app, or watch the video in the app.
+Why is this app useful? you can find videos with your searching term in which time span is most popular. You can watch the video or channel by clicking link in the app, or watch the video in the app.
 
 ##Initial UX
 
@@ -25,7 +25,7 @@ You can access a working prototype of the app here: (https://most-view-video.her
 
 The app's functionality includes:
 
-* Searching 50 most viewed videos by keywords and published date span.
+* Detailing 50 most viewed videos returned by YouTube Api on any given search term.
 * Analysis and Charting searching results based on published date.
 * Filtering searching results by published date.
 * Detailing the thunmbnail, title, description, published data, and channel of videos.
