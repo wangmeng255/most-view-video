@@ -11,17 +11,17 @@ I built this app drawing on my experience from searching videos in YouTube. Alth
 
 Why is this app useful? you can find videos with your searching term in which time span is most popular. You can watch the video or channel by clicking link in the app, or watch the video in the app.
 
-##Initial UX
+## Initial UX
 
 The initial mobile and desktop wireframes can be seen below:
 
 ![Initial Wireframes](https://github.com/wangmeng255/most-view-video/blob/master/img/YouTube-Api-init.png "Inital Wireframes")
 
-##Working Prototype
+## Working Prototype
 
 You can access a working prototype of the app here: (https://most-view-video.herokuapp.com/)
 
-##Functionality
+## Functionality
 
 The app's functionality includes:
 
@@ -33,11 +33,11 @@ The app's functionality includes:
 * Providing links of videos and channels.
 * Sharing app links in Facebook, Twitter, Linkedin, Google+, and Pinterest.
 
-##Technical
+## Technical
 
 The app is built entirely in React and makes use of Fetch calls to The YouTube API to return the data. All data is held in memory during the user's session. It has been built to be fully responsive across mobile, tablet and desktop screen resolutions.
 
-##Development Roadmap
+## Development Roadmap
 
 This is v1.0 of the app, but future enhancements are expected to include:
 
