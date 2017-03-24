@@ -1,4 +1,4 @@
-var actions = require('../actions/actions');
+import actions from '../actions/actions';
 var connect = require('react-redux').connect;
 var Form = require('react-router-form');
 var React = require('react');
