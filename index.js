@@ -1,19 +1,12 @@
-var Provider = require('react-redux').Provider;
-var React = require('react');
-var ReactDOM = require('react-dom');
-var router = require('react-router');
-
-var browserHistory = router.browserHistory;
-var Route = router.Route;
-var Router = router.Router;
-
-var store = require('./store');
-var search = require('./components/search');
-var Container = search.Container;
-var Results = search.Results;
+import {Provider} from 'react-redux';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {browserHistory, Route, Router} from 'react-router';
+import store from './store';
+import {Container, Results} from './components/search';
 
 document.addEventListener('DOMContentLoaded', function() {
-    ReactDOM.render(
+    ReactDOM.render (
         <Provider store={store}>
             <Router history={browserHistory}>
                 <Route path="/" component={Container}>

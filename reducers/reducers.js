@@ -1,4 +1,4 @@
-var actions = require('../actions/actions');
+import actions from '../actions/actions';
 
 var initialState = {
     keyword: null,
@@ -12,7 +12,7 @@ var initialState = {
 
 var searchReducer = function(state, action) {
     state = state || initialState;
-    if(action.type === actions.SEARCH_VIDEOS_SUCCESS) {
+    if (action.type === actions.SEARCH_VIDEOS_SUCCESS) {
         return Object.assign({}, state, {
             keyword: action.keyword,
             after: action.after,
@@ -23,7 +23,7 @@ var searchReducer = function(state, action) {
             path: action.path
         });
     }
-    else if(action.type === actions.SEARCH_VIDEOS_ERROR) {
+    else if (action.type === actions.SEARCH_VIDEOS_ERROR) {
         return Object.assign({}, state, {
             keyword: action.keyword,
             after: action.after,
@@ -32,20 +32,20 @@ var searchReducer = function(state, action) {
             error: action.error,
             index: []
         });
-    } else if(action.type === actions.PLAY_VIDEO) {
+    } else if (action.type === actions.PLAY_VIDEO) {
         return Object.assign({}, state, {
             index: state.index.concat(action.index)
         });
-    } else if(action.type === actions.CLOSE_VIDEO) {
+    } else if (action.type === actions.CLOSE_VIDEO) {
         return Object.assign({}, state, {index: state.index.filter((value) => {
             return value !== action.index
         })});
-    } else if(action.type === actions.CLICK_BAR) {
+    } else if (action.type === actions.CLICK_BAR) {
         return Object.assign({}, state, {
             index: [],
             path: action.path
         });
-    } else if(action.type === actions.CLEAR) {
+    } else if (action.type === actions.CLEAR) {
         return initialState;
     }
     return state;

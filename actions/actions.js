@@ -1,4 +1,4 @@
-require('isomorphic-fetch');
+import 'isomorphic-fetch';
 
 var SEARCH_VIDEOS_SUCCESS = 'SEARCH_VIDEOS_SUCCESS';
 var searchVideosSuccess = function(keyword, after, before, list, path) {
@@ -59,31 +59,31 @@ var searchVideos = function(keyword, after, before, path) {
     var publishedAfter ='';
     var publishedBefore = '';
     var q  = '';
-    if(after) publishedAfter = '&publishedAfter=' + after + 'T00%3A00%3A00Z';
-    if(before) publishedBefore = '&publishedBefore=' + before + 'T00%3A00%3A00Z';
-    if(keyword) q = '&q=' + keyword;
+    if (after) publishedAfter = '&publishedAfter=' + after + 'T00%3A00%3A00Z';
+    if (before) publishedBefore = '&publishedBefore=' + before + 'T00%3A00%3A00Z';
+    if (keyword) q = '&q=' + keyword;
     
     url += 'part=snippet&maxResults=50&order=viewCount' + publishedAfter + publishedBefore + q + 
                   '&type=video&key=AIzaSyD5l0YZstcpguzjY7MMCG3UywVRXQEm5DA';
     return function(dispatch) {
-        return fetch(url).then(function(response) {
+        return fetch(url).then (function(response) {
             if (response.status < 200 || response.status >= 300) {
-                var error = new Error(response.statusText)
+                let error = new Error(response.statusText)
                 error.response = response
                 throw error;
             }
             return response;
         })
-        .then(function(response) {
+        .then (function(response) {
             return response.json();
         })
-        .then(function(data) {
-            var items = data.items;
+        .then (function(data) {
+            let items = data.items;
             return dispatch(
                 searchVideosSuccess(keyword, after, before, items, path)
             );
         })
-        .catch(function(error) {
+        .catch (function(error) {
             return dispatch(
                 searchVideosError(keyword, after, before, error)
             );
