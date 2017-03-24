@@ -29477,7 +29477,12 @@
 
 	'use strict';
 	
-	var actions = __webpack_require__(264);
+	var _actions = __webpack_require__(264);
+	
+	var _actions2 = _interopRequireDefault(_actions);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	var connect = __webpack_require__(1).connect;
 	var Form = __webpack_require__(269);
 	var React = __webpack_require__(4);
@@ -29543,8 +29548,8 @@
 	            if (after) this.refs.after.value = after;
 	            if (before) this.refs.before.value = before;
 	            var path = this.getURLpath(keyword, after, before, filter);
-	            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
-	        } else this.props.dispatch(actions.searchVideos('javascript', '', '', '/'));
+	            this.props.dispatch(_actions2.default.searchVideos(keyword, after, before, path));
+	        } else this.props.dispatch(_actions2.default.searchVideos('javascript', '', '', '/'));
 	    },
 	    componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
 	        var path;
@@ -29554,7 +29559,7 @@
 	        if (this.props.path && this.props.path === nextProps.path && this.props.path !== nextProps.location.pathname + nextProps.location.search) {
 	            path = nextProps.location.pathname + nextProps.location.search;
 	            if (!nextProps.location.query.q) {
-	                this.props.dispatch(actions.clear());
+	                this.props.dispatch(_actions2.default.clear());
 	                this.refs.search.value = '';
 	                this.refs.after.value = '';
 	                this.refs.before.value = '';
@@ -29567,14 +29572,14 @@
 	
 	                if (keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
 	                    if (filter === undefined) {
-	                        this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
+	                        this.props.dispatch(_actions2.default.searchVideosSuccess(keyword, after, before, this.props.list, path));
 	                    } else {
-	                        this.props.dispatch(actions.clickBar(path));
+	                        this.props.dispatch(_actions2.default.clickBar(path));
 	                    }
 	                }
 	
 	                if (keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
-	                    this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	                    this.props.dispatch(_actions2.default.searchVideos(keyword, after, before, path));
 	                }
 	            }
 	        }
@@ -29584,7 +29589,7 @@
 	        var after = this.props.after;
 	        var before = this.props.before;
 	        var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
-	        this.props.dispatch(actions.clickBar(path));
+	        this.props.dispatch(_actions2.default.clickBar(path));
 	    },
 	    //do filter basedon published date
 	    getURLpath: function getURLpath(keyword, after, before, filter) {
@@ -29611,7 +29616,7 @@
 	        event.preventDefault();
 	        var isView = event.target.text === 'View' ? true : false;
 	        var index = event.target.getAttribute('data-index');
-	        if (isView) this.props.dispatch(actions.playVideo(parseInt(index)));else this.props.dispatch(actions.closeVideo(parseInt(index)));
+	        if (isView) this.props.dispatch(_actions2.default.playVideo(parseInt(index)));else this.props.dispatch(_actions2.default.closeVideo(parseInt(index)));
 	    },
 	    //do searching keyword in YouTube API
 	    Search: function Search(event) {
@@ -29652,10 +29657,10 @@
 	            }
 	
 	            if (!keyword && !before && !after) {
-	                if (this.props.list.length) this.props.dispatch(actions.clear());
+	                if (this.props.list.length) this.props.dispatch(_actions2.default.clear());
 	            } else {
 	                var path = this.getURLpath(keyword, after, before, undefined);
-	                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	                this.props.dispatch(_actions2.default.searchVideos(keyword, after, before, path));
 	            }
 	        }
 	    },
