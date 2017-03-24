@@ -1,43 +1,41 @@
-var actions = require('../actions/actions');
-var connect = require('react-redux').connect;
-var Form = require('react-router-form');
-var React = require('react');
-var router = require('react-router');
-
-var Link = router.Link;
+import actions from '../actions/actions';
+import {connect} from 'react-redux';
+import Form from 'react-router-form';
+import React from 'react';
+import {Link} from 'react-router';
 
 var Search = React.createClass({
-    calcChartValue: function() {
+    calcChartValue: function () {
         var timeList = [];
         var minDate;
         //split published date in 5 span
         var date = new Date(this.props.list[0].snippet.publishedAt);
         minDate = date.getTime(); this.maxDate = date.getTime();
-        for(var i = 1; i < this.props.list.length; i++) {
+        for (let i = 1; i < this.props.list.length; i++) {
             date = new Date(this.props.list[i].snippet.publishedAt);
             timeList.push({i: i, milliseconds: date.getTime()});
-            if(minDate > date) minDate = date;
-            if(this.maxDate < date) this.maxDate = date;
+            if (minDate > date) minDate = date;
+            if (this.maxDate < date) this.maxDate = date;
         }
-        var spanDate = (this.maxDate - minDate)/5;
+        const spanDate = (this.maxDate - minDate)/5;
         //count videos in each span
         this.value = [];
-        for(i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             this.value.push([]);
         }
-        for(i = 0; i < timeList.length; i++) {
-            if(timeList[i].milliseconds === this.maxDate.getTime()) {this.value[4].push(timeList[i]); continue;}
+        for (let i = 0; i < timeList.length; i++) {
+            if (timeList[i].milliseconds === this.maxDate.getTime()) {this.value[4].push(timeList[i]); continue;}
             var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
             this.value[index].push(timeList[i]);
         }
         //split height of column in 5 span
         var maxLength = 0;
-        for(i = 0; i < this.value.length; i++) {
-            if(maxLength < this.value[i].length) maxLength = this.value[i].length;
+        for (let i = 0; i < this.value.length; i++) {
+            if (maxLength < this.value[i].length) maxLength = this.value[i].length;
         }
         //calculate height of each date span
         this.spanLength = Math.ceil(maxLength/4);
-        for(i = 0; i < this.value.length; i++) {
+        for (let i = 0; i < this.value.length; i++) {
             this.value[i].barHeight = {height: String(this.value[i].length/this.spanLength * 3) + 'rem'};
             date = new Date(spanDate * i + minDate.getTime());
             var tempDate = date.toUTCString().split(' ');
@@ -48,30 +46,30 @@ var Search = React.createClass({
         this.maxDateISO = this.maxDate.toISOString().split('T')[0];
         this.maxDate = (tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4]);
     },
-    componentDidMount: function() {
-        var params = this.getURLparams(this.props.location.query);
-        var keyword = params.keyword;
-        var after = params.after;
-        var before = params.before;
-        var filter = params.filter;
+    componentDidMount: function () {
+        const params = this.getURLparams(this.props.location.query);
+        const keyword = params.keyword;
+        const after = params.after;
+        const before = params.before;
+        const filter = params.filter;
         
-        if(keyword) {
+        if (keyword) {
             this.refs.search.value = keyword;
-            if(after) this.refs.after.value = after;
-            if(before) this.refs.before.value = before;
+            if (after) this.refs.after.value = after;
+            if (before) this.refs.before.value = before;
             var path = this.getURLpath(keyword, after, before, filter);
             this.props.dispatch(actions.searchVideos(keyword, after, before, path));
         }
         else this.props.dispatch(actions.searchVideos('javascript', '', '', '/'));
     },
-    componentWillUpdate: function(nextProps, nextState) {
+    componentWillUpdate: function (nextProps, nextState) {
         var path;
-        if(this.props.path !== nextProps.path) {
+        if (this.props.path !== nextProps.path) {
             this.props.history.push(nextProps.path);
         }
-        if(this.props.path && (this.props.path === nextProps.path) && (this.props.path !== (nextProps.location.pathname + nextProps.location.search))) {
+        if (this.props.path && (this.props.path === nextProps.path) && (this.props.path !== (nextProps.location.pathname + nextProps.location.search))) {
             path = nextProps.location.pathname + nextProps.location.search;
-            if(!nextProps.location.query.q) 
+            if (!nextProps.location.query.q) 
             {
                 this.props.dispatch(actions.clear());
                 this.refs.search.value = '';
@@ -79,14 +77,14 @@ var Search = React.createClass({
                 this.refs.before.value = '';
             }
             else {
-                var params = this.getURLparams(nextProps.location.query);
-                var keyword = params.keyword;
-                var after = params.after;
-                var before = params.before;
-                var filter = params.filter;
+                const params = this.getURLparams(nextProps.location.query);
+                const keyword = params.keyword;
+                const after = params.after;
+                const before = params.before;
+                const filter = params.filter;
                 
-                if(keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
-                    if(filter === undefined) {
+                if (keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
+                    if (filter === undefined) {
                         this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
                     }
                     else {
@@ -94,145 +92,145 @@ var Search = React.createClass({
                     }
                 }
                 
-                if(keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
+                if (keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
                     this.props.dispatch(actions.searchVideos(keyword, after, before, path));
                 }
             }
         }
     },
-    Filter: function(event) {
+    Filter: function (event) {
         this.clickedBar = parseInt(event.target.closest('tr').getAttribute('data-index'));
-        var after = this.props.after;
-        var before = this.props.before;
-        var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
+        const after = this.props.after;
+        const before = this.props.before;
+        const path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
         this.props.dispatch(actions.clickBar(path));
     },
     //do filter basedon published date
-    getURLpath: function(keyword, after, before, filter) {
+    getURLpath: function (keyword, after, before, filter) {
         var path = '';
         path = '/search?q=' + keyword;
-        if(after && !before) 
+        if (after && !before) 
             path += '&after=' + after + '&before=present';
-        else if(!after && before) 
+        else if (!after && before) 
             path += '&after=2005-04-23&before=' + before;
-        else if(after && before) 
+        else if (after && before) 
             path += '&after=' + after + '&before='+ before;
-        if(filter !== null && filter !== undefined) path += '&filter=' + filter;
+        if (filter !== null && filter !== undefined) path += '&filter=' + filter;
         return path;
     },
-    getURLparams: function(query) {
+    getURLparams: function (query) {
         var params = {};
         params.keyword = query.q;
         params.after = query.after;
         params.before = query.before;
-        if(query.filter) params.filter = parseInt(query.filter);
+        if (query.filter) params.filter = parseInt(query.filter);
         
-        if(params.after === undefined || params.after === '2005-04-23') params.after = '';
-        if(params.before === undefined || params.before === 'present') params.before = '';
+        if (params.after === undefined || params.after === '2005-04-23') params.after = '';
+        if (params.before === undefined || params.before === 'present') params.before = '';
         
         return params;
     },
     //click on 'View' or 'Close' button to open or close video
-    playVideo: function(event) {
+    playVideo: function (event) {
         event.preventDefault();
-        var isView = event.target.text === 'View'? true: false;
-        var index = event.target.getAttribute('data-index');
-        if(isView) this.props.dispatch(actions.playVideo(parseInt(index)));
+        const isView = event.target.text === 'View'? true: false;
+        const index = event.target.getAttribute('data-index');
+        if (isView) this.props.dispatch(actions.playVideo(parseInt(index)));
         else this.props.dispatch(actions.closeVideo(parseInt(index)));
     },
     //do searching keyword in YouTube API
-    Search: function(event) {
+    Search: function (event) {
         event.preventDefault();
         var keyword = this.refs.search.value.trim();
         var after = this.refs.after.value.trim();
         var before = this.refs.before.value.trim();
         
-        if(after) after = after.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
-        if(before) before = before.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
+        if (after) after = after.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
+        if (before) before = before.match(/(20\d\d)-(0\d|1[0-2])-([0-2][0-9]|3[0,1])/g);
         
         var popupAfter = this.refs.afterPopuptext;
         var popupBefore = this.refs.beforePopuptext;
         
-        if(after === null || before === null) {
-            if(after === null) {
+        if (after === null || before === null) {
+            if (after === null) {
                 popupAfter.classList.add('show');
             }
-            if(before === null) {
+            if (before === null) {
                 popupBefore.classList.add('show');
             }
         }
         else {
-            if(after === '') popupAfter.classList.remove('show');
-            else if(after) {
+            if (after === '') popupAfter.classList.remove('show');
+            else if (after) {
                 after = after[0];
                 var afterDate = new Date(after);
-                if(afterDate.toString() !== 'Invalid Date') {
+                if (afterDate.toString() !== 'Invalid Date') {
                     popupAfter.classList.remove('show');
                 }
             }
                 
-            if(before === '') popupBefore.classList.remove('show');
-            else if(before) {
+            if (before === '') popupBefore.classList.remove('show');
+            else if (before) {
                 before = before[0];
                 var beforeDate;
-                if(before) beforeDate = new Date(before);
-                if(beforeDate.toString() !== 'Invalid Date' && beforeDate > afterDate) {
+                if (before) beforeDate = new Date(before);
+                if (beforeDate.toString() !== 'Invalid Date' && beforeDate > afterDate) {
                     popupBefore.classList.remove('show');
                 }
             }
             
-            if(!keyword && !before && !after) {
-                if(this.props.list.length) this.props.dispatch(actions.clear());
+            if (!keyword && !before && !after) {
+                if (this.props.list.length) this.props.dispatch(actions.clear());
             }
             else {
-                var path = this.getURLpath(keyword, after, before, undefined);
+                let path = this.getURLpath(keyword, after, before, undefined);
                 this.props.dispatch(actions.searchVideos(keyword, after, before, path));
             }
         }
     },
-    Share: function(event) {
-        var url = encodeURIComponent(window.location.href);
-        var title = document.title;
-        var shareUrl = {
+    Share: function (event) {
+        const url = encodeURIComponent(window.location.href);
+        const title = document.title;
+        const shareUrl = {
             Facebook: "https://www.facebook.com/sharer/sharer.php?u=" + url,
             GooglePlus: "https://plus.google.com/share?url=" + url,
             Linkedin: "https://www.linkedin.com/shareArticle?mini=true&url=" + url,
             Pinterest: "https://pinterest.com/pin/create/link/?url=" + url,
             Twitter: "https://twitter.com/home?status=" + url + " " + title
         };
-        var webTitle = event.target.closest('a').getAttribute('title');
-        var webName = webTitle.split(' ');
+        const webTitle = event.target.closest('a').getAttribute('title');
+        const webName = webTitle.split(' ');
         event.target.closest('a').setAttribute('href', shareUrl[webName[2]]);
     },
-    Show: function() {
+    Show: function () {
         this.refs.menu.show();
         var share = document.getElementById('share');
-        if(screen.width > 480) share.style.left = '-3rem';
+        if (screen.width > 480) share.style.left = '-3rem';
         else share.style.left = '-5rem';
         share.style.transition = 'left ease 250ms';
     },
     //run component
-    render: function() {
-        var params = this.getURLparams(this.props.location.query);
-        var keyword = params.keyword;
-        var after = params.after;
-        var before = params.before;
-        var filter = params.filter;
+    render: function () {
+        const params = this.getURLparams(this.props.location.query);
+        const keyword = params.keyword;
+        const after = params.after;
+        const before = params.before;
+        const filter = params.filter;
         
         //pass results list to Results component
-        if(this.props.list.length) this.calcChartValue();
-        var results = <Results list={this.props.list} keyword={keyword} index={this.props.index} onClick={this.playVideo}
+        if (this.props.list.length) this.calcChartValue();
+        const results = <Results list={this.props.list} keyword={keyword} index={this.props.index} onClick={this.playVideo}
                                after={after} before={before} error={this.props.error} clickedBar={filter}
                                Filter={this.Filter} maxDate={this.maxDate} maxDateISO={this.maxDateISO} 
                                value={this.value} spanLength={this.spanLength} />;;
         //calculate current date to set max for date input
-        var now = new Date;
+        const now = new Date;
         var month = String(now.getUTCMonth() + 1);
-        if(month.length < 2) month = '0' + month;
+        if (month.length < 2) month = '0' + month;
         var day = String(now.getUTCDate());
-        if(day.length < 2) day = '0' + day;
+        if (day.length < 2) day = '0' + day;
         
-        var path = this.getURLpath(keyword,after, before, this.clickedBar);
+        const path = this.getURLpath(keyword,after, before, this.clickedBar);
         
         return (
             <div>
@@ -271,23 +269,23 @@ var Search = React.createClass({
 });
 
 var Menu = React.createClass({
-    getInitialState: function() {
+    getInitialState: function () {
         return {
             visible: false  
         };
     },
-    show: function() {
+    show: function () {
         this.setState({ visible: true });
         document.addEventListener("click", this.hide);
     },
-    hide: function() {
+    hide: function () {
         document.removeEventListener("click", this.hide);
         this.setState({ visible: false });
         var share = document.getElementById('share');
-        if(screen.width > 480) share.style.left  = '-1rem';
+        if (screen.width > 480) share.style.left  = '-1rem';
         else share.style.left = '-2rem';
     },
-    render: function() {
+    render: function () {
         var name = 'mn-social-bottom-c ' + (this.state.visible ? 'visible' : '');
         return (
             <div className={name}>
@@ -311,9 +309,9 @@ var Menu = React.createClass({
     }
 });
 
-var Results = function(props) {
+var Results = function (props) {
     //return error
-    if(props.error) {
+    if (props.error) {
         return (
             <div id="error">
                 <h2>Oh, we have got error Code: "{props.error.response.status}"</h2>
@@ -335,33 +333,33 @@ var Results = function(props) {
 };
 
 var Chart = React.createClass({
-    render: function() {
+    render: function () {
         //chart
-        if(!this.props.list.length) return null;
+        if (!this.props.list.length) return null;
         
         //header for results
         var header = '';
         var resultHeader;
-        if(this.props.list.length) {
-            if(!this.props.keyword) header = '"javascript"';
+        if (this.props.list.length) {
+            if (!this.props.keyword) header = '"javascript"';
             else  header = '"' + this.props.keyword + '"';
             
-            if(this.props.after) header = header + ' after ' + this.props.after;
-            if(this.props.before) header = header + ' before ' + this.props.before;
+            if (this.props.after) header = header + ' after ' + this.props.after;
+            if (this.props.before) header = header + ' before ' + this.props.before;
             resultHeader = <h2>Results for {header}</h2>;
         }
         //result
         var resultList = [];
         var list = [];
-        if((this.props.clickedBar !== null) && (this.props.clickedBar !== undefined)) {
-            for(var i = 0; i < this.props.value[this.props.clickedBar].length; i++) {
+        if ((this.props.clickedBar !== null) && (this.props.clickedBar !== undefined)) {
+            for (let i = 0; i < this.props.value[this.props.clickedBar].length; i++) {
                 list.push(this.props.list[this.props.value[this.props.clickedBar][i].i]);
             }
         }
         else list = this.props.list;
         
-        for(i = 0; i < list.length; i++) {
-            if(this.props.index.indexOf(i) !== -1) {
+        for (let i = 0; i < list.length; i++) {
+            if (this.props.index.indexOf(i) !== -1) {
                 var player = <PlayVideo videoId={list[i].id.videoId} />;
                 resultList.push(//for open video li
                     <li key={i}>
@@ -452,7 +450,7 @@ var Chart = React.createClass({
         );
     }
 });
-var Snippet = function(props) {
+var Snippet = function (props) {
     return (
         <div className="video-info">
             <a href={"https://www.youtube.com/watch?v=" + props.videoId} target={props.videoId}>
@@ -480,7 +478,7 @@ var Snippet = function(props) {
     );
 };
 
-var PlayVideo = function(props) {
+var PlayVideo = function (props) {
     var url = "//www.youtube.com/embed/" + props.videoId + "?enablejsapi=1";
     return (
         <iframe className="player" type="text/html" width="640" height="390"
@@ -488,7 +486,7 @@ var PlayVideo = function(props) {
     );
 };
 
-var mapStateToProps = function(state, props) {
+var mapStateToProps = function (state, props) {
     return {
         keyword: state.keyword,
         after: state.after,

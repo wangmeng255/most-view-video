@@ -46,31 +46,37 @@
 
 	'use strict';
 	
-	var Provider = __webpack_require__(1).Provider;
-	var React = __webpack_require__(4);
-	var ReactDOM = __webpack_require__(61);
-	var router = __webpack_require__(199);
+	var _reactRedux = __webpack_require__(1);
 	
-	var browserHistory = router.browserHistory;
-	var Route = router.Route;
-	var Router = router.Router;
+	var _react = __webpack_require__(4);
 	
-	var store = __webpack_require__(262);
-	var search = __webpack_require__(268);
-	var Container = search.Container;
-	var Results = search.Results;
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(61);
+	
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+	
+	var _reactRouter = __webpack_require__(199);
+	
+	var _store = __webpack_require__(262);
+	
+	var _store2 = _interopRequireDefault(_store);
+	
+	var _search = __webpack_require__(268);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	document.addEventListener('DOMContentLoaded', function () {
-	    ReactDOM.render(React.createElement(
-	        Provider,
-	        { store: store },
-	        React.createElement(
-	            Router,
-	            { history: browserHistory },
-	            React.createElement(
-	                Route,
-	                { path: '/', component: Container },
-	                React.createElement(Route, { path: 'search', comppnent: Results })
+	    _reactDom2.default.render(_react2.default.createElement(
+	        _reactRedux.Provider,
+	        { store: _store2.default },
+	        _react2.default.createElement(
+	            _reactRouter.Router,
+	            { history: _reactRouter.browserHistory },
+	            _react2.default.createElement(
+	                _reactRouter.Route,
+	                { path: '/', component: _search.Container },
+	                _react2.default.createElement(_reactRouter.Route, { path: 'search', comppnent: _search.Results })
 	            )
 	        )
 	    ), document.getElementById('app'));
@@ -28817,14 +28823,19 @@
 
 	'use strict';
 	
-	var reducers = __webpack_require__(263);
-	var redux = __webpack_require__(41);
-	var thunk = __webpack_require__(267).default;
+	var _reducers = __webpack_require__(263);
 	
-	var createStore = redux.createStore;
-	var applyMiddleware = redux.applyMiddleware;
+	var _reducers2 = _interopRequireDefault(_reducers);
 	
-	var store = createStore(reducers.searchReducer, applyMiddleware(thunk));
+	var _redux = __webpack_require__(41);
+	
+	var _reduxThunk = __webpack_require__(267);
+	
+	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var store = (0, _redux.createStore)(_reducers2.default.searchReducer, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 	module.exports = store;
 
 /***/ },
@@ -28833,7 +28844,11 @@
 
 	'use strict';
 	
-	var actions = __webpack_require__(264);
+	var _actions = __webpack_require__(264);
+	
+	var _actions2 = _interopRequireDefault(_actions);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var initialState = {
 	    keyword: null,
@@ -28847,7 +28862,7 @@
 	
 	var searchReducer = function searchReducer(state, action) {
 	    state = state || initialState;
-	    if (action.type === actions.SEARCH_VIDEOS_SUCCESS) {
+	    if (action.type === _actions2.default.SEARCH_VIDEOS_SUCCESS) {
 	        return Object.assign({}, state, {
 	            keyword: action.keyword,
 	            after: action.after,
@@ -28857,7 +28872,7 @@
 	            index: [],
 	            path: action.path
 	        });
-	    } else if (action.type === actions.SEARCH_VIDEOS_ERROR) {
+	    } else if (action.type === _actions2.default.SEARCH_VIDEOS_ERROR) {
 	        return Object.assign({}, state, {
 	            keyword: action.keyword,
 	            after: action.after,
@@ -28866,20 +28881,20 @@
 	            error: action.error,
 	            index: []
 	        });
-	    } else if (action.type === actions.PLAY_VIDEO) {
+	    } else if (action.type === _actions2.default.PLAY_VIDEO) {
 	        return Object.assign({}, state, {
 	            index: state.index.concat(action.index)
 	        });
-	    } else if (action.type === actions.CLOSE_VIDEO) {
+	    } else if (action.type === _actions2.default.CLOSE_VIDEO) {
 	        return Object.assign({}, state, { index: state.index.filter(function (value) {
 	                return value !== action.index;
 	            }) });
-	    } else if (action.type === actions.CLICK_BAR) {
+	    } else if (action.type === _actions2.default.CLICK_BAR) {
 	        return Object.assign({}, state, {
 	            index: [],
 	            path: action.path
 	        });
-	    } else if (action.type === actions.CLEAR) {
+	    } else if (action.type === _actions2.default.CLEAR) {
 	        return initialState;
 	    }
 	    return state;
@@ -29477,15 +29492,25 @@
 
 	'use strict';
 	
-	var actions = __webpack_require__(264);
-	var connect = __webpack_require__(1).connect;
-	var Form = __webpack_require__(269);
-	var React = __webpack_require__(4);
-	var router = __webpack_require__(199);
+	var _actions = __webpack_require__(264);
 	
-	var Link = router.Link;
+	var _actions2 = _interopRequireDefault(_actions);
 	
-	var Search = React.createClass({
+	var _reactRedux = __webpack_require__(1);
+	
+	var _reactRouterForm = __webpack_require__(269);
+	
+	var _reactRouterForm2 = _interopRequireDefault(_reactRouterForm);
+	
+	var _react = __webpack_require__(4);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRouter = __webpack_require__(199);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Search = _react2.default.createClass({
 	    displayName: 'Search',
 	
 	    calcChartValue: function calcChartValue() {
@@ -29503,29 +29528,29 @@
 	        var spanDate = (this.maxDate - minDate) / 5;
 	        //count videos in each span
 	        this.value = [];
-	        for (i = 0; i < 5; i++) {
+	        for (var _i = 0; _i < 5; _i++) {
 	            this.value.push([]);
 	        }
-	        for (i = 0; i < timeList.length; i++) {
-	            if (timeList[i].milliseconds === this.maxDate.getTime()) {
-	                this.value[4].push(timeList[i]);continue;
+	        for (var _i2 = 0; _i2 < timeList.length; _i2++) {
+	            if (timeList[_i2].milliseconds === this.maxDate.getTime()) {
+	                this.value[4].push(timeList[_i2]);continue;
 	            }
-	            var index = Math.floor((timeList[i].milliseconds - minDate.getTime()) / spanDate);
-	            this.value[index].push(timeList[i]);
+	            var index = Math.floor((timeList[_i2].milliseconds - minDate.getTime()) / spanDate);
+	            this.value[index].push(timeList[_i2]);
 	        }
 	        //split height of column in 5 span
 	        var maxLength = 0;
-	        for (i = 0; i < this.value.length; i++) {
-	            if (maxLength < this.value[i].length) maxLength = this.value[i].length;
+	        for (var _i3 = 0; _i3 < this.value.length; _i3++) {
+	            if (maxLength < this.value[_i3].length) maxLength = this.value[_i3].length;
 	        }
 	        //calculate height of each date span
 	        this.spanLength = Math.ceil(maxLength / 4);
-	        for (i = 0; i < this.value.length; i++) {
-	            this.value[i].barHeight = { height: String(this.value[i].length / this.spanLength * 3) + 'rem' };
-	            date = new Date(spanDate * i + minDate.getTime());
+	        for (var _i4 = 0; _i4 < this.value.length; _i4++) {
+	            this.value[_i4].barHeight = { height: String(this.value[_i4].length / this.spanLength * 3) + 'rem' };
+	            date = new Date(spanDate * _i4 + minDate.getTime());
 	            var tempDate = date.toUTCString().split(' ');
-	            this.value[i].time = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
-	            this.value[i].timeStart = date.toISOString().split('T')[0];
+	            this.value[_i4].time = tempDate[2] + ' ' + tempDate[1] + ' ' + tempDate[3] + ' ' + tempDate[4];
+	            this.value[_i4].timeStart = date.toISOString().split('T')[0];
 	        }
 	        tempDate = this.maxDate.toUTCString().split(' ');
 	        this.maxDateISO = this.maxDate.toISOString().split('T')[0];
@@ -29543,8 +29568,8 @@
 	            if (after) this.refs.after.value = after;
 	            if (before) this.refs.before.value = before;
 	            var path = this.getURLpath(keyword, after, before, filter);
-	            this.props.dispatch(actions.searchVideos(keyword, after, before, path));
-	        } else this.props.dispatch(actions.searchVideos('javascript', '', '', '/'));
+	            this.props.dispatch(_actions2.default.searchVideos(keyword, after, before, path));
+	        } else this.props.dispatch(_actions2.default.searchVideos('javascript', '', '', '/'));
 	    },
 	    componentWillUpdate: function componentWillUpdate(nextProps, nextState) {
 	        var path;
@@ -29554,7 +29579,7 @@
 	        if (this.props.path && this.props.path === nextProps.path && this.props.path !== nextProps.location.pathname + nextProps.location.search) {
 	            path = nextProps.location.pathname + nextProps.location.search;
 	            if (!nextProps.location.query.q) {
-	                this.props.dispatch(actions.clear());
+	                this.props.dispatch(_actions2.default.clear());
 	                this.refs.search.value = '';
 	                this.refs.after.value = '';
 	                this.refs.before.value = '';
@@ -29567,14 +29592,14 @@
 	
 	                if (keyword === this.props.keyword && after === this.props.after && before === this.props.before) {
 	                    if (filter === undefined) {
-	                        this.props.dispatch(actions.searchVideosSuccess(keyword, after, before, this.props.list, path));
+	                        this.props.dispatch(_actions2.default.searchVideosSuccess(keyword, after, before, this.props.list, path));
 	                    } else {
-	                        this.props.dispatch(actions.clickBar(path));
+	                        this.props.dispatch(_actions2.default.clickBar(path));
 	                    }
 	                }
 	
 	                if (keyword !== this.props.keyword || after !== this.props.after || before !== this.props.before) {
-	                    this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	                    this.props.dispatch(_actions2.default.searchVideos(keyword, after, before, path));
 	                }
 	            }
 	        }
@@ -29584,7 +29609,7 @@
 	        var after = this.props.after;
 	        var before = this.props.before;
 	        var path = this.getURLpath(this.props.keyword, after, before, this.clickedBar);
-	        this.props.dispatch(actions.clickBar(path));
+	        this.props.dispatch(_actions2.default.clickBar(path));
 	    },
 	    //do filter basedon published date
 	    getURLpath: function getURLpath(keyword, after, before, filter) {
@@ -29611,7 +29636,7 @@
 	        event.preventDefault();
 	        var isView = event.target.text === 'View' ? true : false;
 	        var index = event.target.getAttribute('data-index');
-	        if (isView) this.props.dispatch(actions.playVideo(parseInt(index)));else this.props.dispatch(actions.closeVideo(parseInt(index)));
+	        if (isView) this.props.dispatch(_actions2.default.playVideo(parseInt(index)));else this.props.dispatch(_actions2.default.closeVideo(parseInt(index)));
 	    },
 	    //do searching keyword in YouTube API
 	    Search: function Search(event) {
@@ -29652,10 +29677,10 @@
 	            }
 	
 	            if (!keyword && !before && !after) {
-	                if (this.props.list.length) this.props.dispatch(actions.clear());
+	                if (this.props.list.length) this.props.dispatch(_actions2.default.clear());
 	            } else {
 	                var path = this.getURLpath(keyword, after, before, undefined);
-	                this.props.dispatch(actions.searchVideos(keyword, after, before, path));
+	                this.props.dispatch(_actions2.default.searchVideos(keyword, after, before, path));
 	            }
 	        }
 	    },
@@ -29689,7 +29714,7 @@
 	
 	        //pass results list to Results component
 	        if (this.props.list.length) this.calcChartValue();
-	        var results = React.createElement(Results, { list: this.props.list, keyword: keyword, index: this.props.index, onClick: this.playVideo,
+	        var results = _react2.default.createElement(Results, { list: this.props.list, keyword: keyword, index: this.props.index, onClick: this.playVideo,
 	            after: after, before: before, error: this.props.error, clickedBar: filter,
 	            Filter: this.Filter, maxDate: this.maxDate, maxDateISO: this.maxDateISO,
 	            value: this.value, spanLength: this.spanLength });;
@@ -29702,66 +29727,66 @@
 	
 	        var path = this.getURLpath(keyword, after, before, this.clickedBar);
 	
-	        return React.createElement(
+	        return _react2.default.createElement(
 	            'div',
 	            null,
-	            React.createElement(
+	            _react2.default.createElement(
 	                'h1',
 	                null,
-	                React.createElement('img', { id: 'logo', src: 'YouTube-logo-light.png',
+	                _react2.default.createElement('img', { id: 'logo', src: 'YouTube-logo-light.png',
 	                    alt: "YouTube Logo",
 	                    title: "YouTube Logo" }),
 	                'Top 50 Viewed Videos'
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'p',
 	                null,
 	                'Explore trending YouTube videos by published date.'
 	            ),
-	            React.createElement(
-	                Form,
+	            _react2.default.createElement(
+	                _reactRouterForm2.default,
 	                { to: path, method: 'POST' },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'label',
 	                    { htmlFor: 'keyword' },
 	                    'Search Phrase'
 	                ),
-	                React.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'javascript', onChange: this.Search }),
-	                React.createElement(
+	                _react2.default.createElement('input', { id: 'keyword', type: 'search', ref: 'search', placeholder: 'javascript', onChange: this.Search }),
+	                _react2.default.createElement(
 	                    'div',
 	                    null,
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'label',
 	                        null,
 	                        'Time span: '
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'label',
 	                        { htmlFor: 'after' },
 	                        'From '
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'popup' },
-	                        React.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day,
+	                        _react2.default.createElement('input', { type: 'date', id: 'after', ref: 'after', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day,
 	                            onChange: this.Search, placeholder: 'yyyy-mm-dd' }),
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'span',
 	                            { className: 'popuptext', ref: 'afterPopuptext' },
 	                            'Invalid date'
 	                        )
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'label',
 	                        { htmlFor: 'before' },
 	                        ' To '
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'popup' },
-	                        React.createElement('input', { type: 'date', id: 'before', ref: 'before', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day,
+	                        _react2.default.createElement('input', { type: 'date', id: 'before', ref: 'before', min: '2005-04-23', max: now.getUTCFullYear() + "-" + month + "-" + day,
 	                            onChange: this.Search, placeholder: 'yyyy-mm-dd' }),
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'span',
 	                            { className: 'popuptext', ref: 'beforePopuptext' },
 	                            'Invalid date'
@@ -29769,18 +29794,18 @@
 	                    )
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'button',
 	                { id: 'share', ref: 'share', onClick: this.Show },
 	                'Share'
 	            ),
-	            React.createElement(Menu, { ref: 'menu', Share: this.Share, showButton: this.refs.share }),
+	            _react2.default.createElement(Menu, { ref: 'menu', Share: this.Share, showButton: this.refs.share }),
 	            results
 	        );
 	    }
 	});
 	
-	var Menu = React.createClass({
+	var Menu = _react2.default.createClass({
 	    displayName: 'Menu',
 	
 	    getInitialState: function getInitialState() {
@@ -29800,52 +29825,52 @@
 	    },
 	    render: function render() {
 	        var name = 'mn-social-bottom-c ' + (this.state.visible ? 'visible' : '');
-	        return React.createElement(
+	        return _react2.default.createElement(
 	            'div',
 	            { className: name },
-	            React.createElement(
+	            _react2.default.createElement(
 	                'a',
 	                { className: 'mn-social-bottom', title: 'Share on Facebook', target: '_blank', onClick: this.props.Share },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'svg',
 	                    { viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
-	                    React.createElement('path', { d: 'M1343 12v264h-157q-86 0-116 36t-30 108v189h293l-39 296h-254v759h-306v-759h-255v-296h255v-218q0-186 104-288.5t277-102.5q147 0 228 12z' })
+	                    _react2.default.createElement('path', { d: 'M1343 12v264h-157q-86 0-116 36t-30 108v189h293l-39 296h-254v759h-306v-759h-255v-296h255v-218q0-186 104-288.5t277-102.5q147 0 228 12z' })
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'a',
 	                { className: 'mn-social-bottom', title: 'Share on Twitter', target: '_blank', onClick: this.props.Share },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'svg',
 	                    { viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
-	                    React.createElement('path', { d: 'M1684 408q-67 98-162 167 1 14 1 42 0 130-38 259.5t-115.5 248.5-184.5 210.5-258 146-323 54.5q-271 0-496-145 35 4 78 4 225 0 401-138-105-2-188-64.5t-114-159.5q33 5 61 5 43 0 85-11-112-23-185.5-111.5t-73.5-205.5v-4q68 38 146 41-66-44-105-115t-39-154q0-88 44-163 121 149 294.5 238.5t371.5 99.5q-8-38-8-74 0-134 94.5-228.5t228.5-94.5q140 0 236 102 109-21 205-78-37 115-142 178 93-10 186-50z' })
+	                    _react2.default.createElement('path', { d: 'M1684 408q-67 98-162 167 1 14 1 42 0 130-38 259.5t-115.5 248.5-184.5 210.5-258 146-323 54.5q-271 0-496-145 35 4 78 4 225 0 401-138-105-2-188-64.5t-114-159.5q33 5 61 5 43 0 85-11-112-23-185.5-111.5t-73.5-205.5v-4q68 38 146 41-66-44-105-115t-39-154q0-88 44-163 121 149 294.5 238.5t371.5 99.5q-8-38-8-74 0-134 94.5-228.5t228.5-94.5q140 0 236 102 109-21 205-78-37 115-142 178 93-10 186-50z' })
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'a',
 	                { className: 'mn-social-bottom', title: 'Share on Linkedin', target: '_blank', onClick: this.props.Share },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'svg',
 	                    { viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
-	                    React.createElement('path', { d: 'M477 625v991h-330v-991h330zm21-306q1 73-50.5 122t-135.5 49h-2q-82 0-132-49t-50-122q0-74 51.5-122.5t134.5-48.5 133 48.5 51 122.5zm1166 729v568h-329v-530q0-105-40.5-164.5t-126.5-59.5q-63 0-105.5 34.5t-63.5 85.5q-11 30-11 81v553h-329q2-399 2-647t-1-296l-1-48h329v144h-2q20-32 41-56t56.5-52 87-43.5 114.5-15.5q171 0 275 113.5t104 332.5z' })
+	                    _react2.default.createElement('path', { d: 'M477 625v991h-330v-991h330zm21-306q1 73-50.5 122t-135.5 49h-2q-82 0-132-49t-50-122q0-74 51.5-122.5t134.5-48.5 133 48.5 51 122.5zm1166 729v568h-329v-530q0-105-40.5-164.5t-126.5-59.5q-63 0-105.5 34.5t-63.5 85.5q-11 30-11 81v553h-329q2-399 2-647t-1-296l-1-48h329v144h-2q20-32 41-56t56.5-52 87-43.5 114.5-15.5q171 0 275 113.5t104 332.5z' })
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'a',
 	                { className: 'mn-social-bottom', title: 'Share on GooglePlus', target: '_blank', onClick: this.props.Share },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'svg',
 	                    { viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
-	                    React.createElement('path', { d: 'M1181 913q0 208-87 370.5t-248 254-369 91.5q-149 0-285-58t-234-156-156-234-58-285 58-285 156-234 234-156 285-58q286 0 491 192l-199 191q-117-113-292-113-123 0-227.5 62t-165.5 168.5-61 232.5 61 232.5 165.5 168.5 227.5 62q83 0 152.5-23t114.5-57.5 78.5-78.5 49-83 21.5-74h-416v-252h692q12 63 12 122zm867-122v210h-209v209h-210v-209h-209v-210h209v-209h210v209h209z' })
+	                    _react2.default.createElement('path', { d: 'M1181 913q0 208-87 370.5t-248 254-369 91.5q-149 0-285-58t-234-156-156-234-58-285 58-285 156-234 234-156 285-58q286 0 491 192l-199 191q-117-113-292-113-123 0-227.5 62t-165.5 168.5-61 232.5 61 232.5 165.5 168.5 227.5 62q83 0 152.5-23t114.5-57.5 78.5-78.5 49-83 21.5-74h-416v-252h692q12 63 12 122zm867-122v210h-209v209h-210v-209h-209v-210h209v-209h210v209h209z' })
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'a',
 	                { className: 'mn-social-bottom', title: 'Share on Pinterest', target: '_blank', onClick: this.props.Share },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'svg',
 	                    { viewBox: '0 0 1792 1792', xmlns: 'http://www.w3.org/2000/svg' },
-	                    React.createElement('path', { d: 'M256 597q0-108 37.5-203.5t103.5-166.5 152-123 185-78 202-26q158 0 294 66.5t221 193.5 85 287q0 96-19 188t-60 177-100 149.5-145 103-189 38.5q-68 0-135-32t-96-88q-10 39-28 112.5t-23.5 95-20.5 71-26 71-32 62.5-46 77.5-62 86.5l-14 5-9-10q-15-157-15-188 0-92 21.5-206.5t66.5-287.5 52-203q-32-65-32-169 0-83 52-156t132-73q61 0 95 40.5t34 102.5q0 66-44 191t-44 187q0 63 45 104.5t109 41.5q55 0 102-25t78.5-68 56-95 38-110.5 20-111 6.5-99.5q0-173-109.5-269.5t-285.5-96.5q-200 0-334 129.5t-134 328.5q0 44 12.5 85t27 65 27 45.5 12.5 30.5q0 28-15 73t-37 45q-2 0-17-3-51-15-90.5-56t-61-94.5-32.5-108-11-106.5z' })
+	                    _react2.default.createElement('path', { d: 'M256 597q0-108 37.5-203.5t103.5-166.5 152-123 185-78 202-26q158 0 294 66.5t221 193.5 85 287q0 96-19 188t-60 177-100 149.5-145 103-189 38.5q-68 0-135-32t-96-88q-10 39-28 112.5t-23.5 95-20.5 71-26 71-32 62.5-46 77.5-62 86.5l-14 5-9-10q-15-157-15-188 0-92 21.5-206.5t66.5-287.5 52-203q-32-65-32-169 0-83 52-156t132-73q61 0 95 40.5t34 102.5q0 66-44 191t-44 187q0 63 45 104.5t109 41.5q55 0 102-25t78.5-68 56-95 38-110.5 20-111 6.5-99.5q0-173-109.5-269.5t-285.5-96.5q-200 0-334 129.5t-134 328.5q0 44 12.5 85t27 65 27 45.5 12.5 30.5q0 28-15 73t-37 45q-2 0-17-3-51-15-90.5-56t-61-94.5-32.5-108-11-106.5z' })
 	                )
 	            )
 	        );
@@ -29855,27 +29880,27 @@
 	var Results = function Results(props) {
 	    //return error
 	    if (props.error) {
-	        return React.createElement(
+	        return _react2.default.createElement(
 	            'div',
 	            { id: 'error' },
-	            React.createElement(
+	            _react2.default.createElement(
 	                'h2',
 	                null,
 	                'Oh, we have got error Code: "',
 	                props.error.response.status,
 	                '"'
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'p',
 	                null,
 	                'Error at ',
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'a',
 	                    { href: props.error.response.url, target: props.error.response.url },
 	                    props.error.response.url
 	                ),
 	                ' Type is "',
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'strong',
 	                    null,
 	                    props.error.response.type
@@ -29885,18 +29910,18 @@
 	        );
 	    }
 	    // return chart and results
-	    var chart = React.createElement(Chart, { list: props.list, after: props.after, before: props.before,
+	    var chart = _react2.default.createElement(Chart, { list: props.list, after: props.after, before: props.before,
 	        keyword: props.keyword, onClick: props.onClick, index: props.index,
 	        clickedBar: props.clickedBar, Filter: props.Filter, maxDate: props.maxDate,
 	        maxDateISO: props.maxDateISO, value: props.value, spanLength: props.spanLength });
-	    return React.createElement(
+	    return _react2.default.createElement(
 	        'section',
 	        null,
 	        chart
 	    );
 	};
 	
-	var Chart = React.createClass({
+	var Chart = _react2.default.createClass({
 	    displayName: 'Chart',
 	
 	    render: function render() {
@@ -29911,7 +29936,7 @@
 	
 	            if (this.props.after) header = header + ' after ' + this.props.after;
 	            if (this.props.before) header = header + ' before ' + this.props.before;
-	            resultHeader = React.createElement(
+	            resultHeader = _react2.default.createElement(
 	                'h2',
 	                null,
 	                'Results for ',
@@ -29927,16 +29952,16 @@
 	            }
 	        } else list = this.props.list;
 	
-	        for (i = 0; i < list.length; i++) {
-	            if (this.props.index.indexOf(i) !== -1) {
-	                var player = React.createElement(PlayVideo, { videoId: list[i].id.videoId });
+	        for (var _i5 = 0; _i5 < list.length; _i5++) {
+	            if (this.props.index.indexOf(_i5) !== -1) {
+	                var player = _react2.default.createElement(PlayVideo, { videoId: list[_i5].id.videoId });
 	                resultList.push( //for open video li
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'li',
-	                    { key: i },
-	                    React.createElement(Snippet, { snippet: list[i].snippet, anchorText: "Close",
-	                        videoId: list[i].id.videoId, data_index: i, onClick: this.props.onClick }),
-	                    React.createElement(
+	                    { key: _i5 },
+	                    _react2.default.createElement(Snippet, { snippet: list[_i5].snippet, anchorText: "Close",
+	                        videoId: list[_i5].id.videoId, data_index: _i5, onClick: this.props.onClick }),
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'player' },
 	                        player
@@ -29944,48 +29969,48 @@
 	                ));
 	            } else {
 	                //for close video li
-	                resultList.push(React.createElement(
+	                resultList.push(_react2.default.createElement(
 	                    'li',
-	                    { key: i },
-	                    React.createElement(Snippet, { snippet: list[i].snippet, anchorText: "View",
-	                        videoId: list[i].id.videoId, data_index: i, onClick: this.props.onClick }),
-	                    React.createElement('div', { className: 'player' })
+	                    { key: _i5 },
+	                    _react2.default.createElement(Snippet, { snippet: list[_i5].snippet, anchorText: "View",
+	                        videoId: list[_i5].id.videoId, data_index: _i5, onClick: this.props.onClick }),
+	                    _react2.default.createElement('div', { className: 'player' })
 	                ));
 	            }
 	        }
 	
-	        return React.createElement(
+	        return _react2.default.createElement(
 	            'div',
 	            null,
-	            React.createElement(
+	            _react2.default.createElement(
 	                'div',
 	                { className: 'chart' },
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'table',
 	                    { id: 'q-graph' },
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'caption',
 	                        null,
 	                        'Videos Filtered by Published Date'
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'tbody',
 	                        null,
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'tr',
 	                            { className: 'qtr', id: 'q1', onClick: this.props.Filter, 'data-index': '0' },
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                this.props.value[0].time
 	                            ),
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'td',
 	                                { className: 'value bar', style: this.props.value[0].barHeight },
-	                                React.createElement(
-	                                    Link,
+	                                _react2.default.createElement(
+	                                    _reactRouter.Link,
 	                                    { to: "/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=0' },
-	                                    React.createElement(
+	                                    _react2.default.createElement(
 	                                        'p',
 	                                        null,
 	                                        this.props.value[0].length
@@ -29993,21 +30018,21 @@
 	                                )
 	                            )
 	                        ),
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'tr',
 	                            { className: 'qtr', id: 'q2', onClick: this.props.Filter, 'data-index': '1' },
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                this.props.value[1].time
 	                            ),
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'td',
 	                                { className: 'value bar', style: this.props.value[1].barHeight },
-	                                React.createElement(
-	                                    Link,
+	                                _react2.default.createElement(
+	                                    _reactRouter.Link,
 	                                    { to: "/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=1' },
-	                                    React.createElement(
+	                                    _react2.default.createElement(
 	                                        'p',
 	                                        null,
 	                                        this.props.value[1].length
@@ -30015,21 +30040,21 @@
 	                                )
 	                            )
 	                        ),
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'tr',
 	                            { className: 'qtr', id: 'q3', onClick: this.props.Filter, 'data-index': '2' },
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                this.props.value[2].time
 	                            ),
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'td',
 	                                { className: 'value bar', style: this.props.value[2].barHeight },
-	                                React.createElement(
-	                                    Link,
+	                                _react2.default.createElement(
+	                                    _reactRouter.Link,
 	                                    { to: "/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=2' },
-	                                    React.createElement(
+	                                    _react2.default.createElement(
 	                                        'p',
 	                                        null,
 	                                        this.props.value[2].length
@@ -30037,21 +30062,21 @@
 	                                )
 	                            )
 	                        ),
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'tr',
 	                            { className: 'qtr', id: 'q4', onClick: this.props.Filter, 'data-index': '3' },
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                this.props.value[3].time
 	                            ),
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'td',
 	                                { className: 'value bar', style: this.props.value[3].barHeight },
-	                                React.createElement(
-	                                    Link,
+	                                _react2.default.createElement(
+	                                    _reactRouter.Link,
 	                                    { to: "/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=3' },
-	                                    React.createElement(
+	                                    _react2.default.createElement(
 	                                        'p',
 	                                        null,
 	                                        this.props.value[3].length
@@ -30059,26 +30084,26 @@
 	                                )
 	                            )
 	                        ),
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'tr',
 	                            { className: 'qtr', id: 'q5', onClick: this.props.Filter, 'data-index': '4' },
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                this.props.value[4].time
 	                            ),
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'th',
 	                                { scope: 'row' },
 	                                this.props.maxDate
 	                            ),
-	                            React.createElement(
+	                            _react2.default.createElement(
 	                                'td',
 	                                { className: 'value bar', style: this.props.value[4].barHeight },
-	                                React.createElement(
-	                                    Link,
+	                                _react2.default.createElement(
+	                                    _reactRouter.Link,
 	                                    { to: "/search?q=" + this.props.keyword + "&after=" + this.props.after + '&before=' + this.props.before + '&filter=4' },
-	                                    React.createElement(
+	                                    _react2.default.createElement(
 	                                        'p',
 	                                        null,
 	                                        this.props.value[4].length
@@ -30088,58 +30113,58 @@
 	                        )
 	                    )
 	                ),
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'div',
 	                    { id: 'ticks' },
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'tick' },
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            this.props.spanLength * 5
 	                        )
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'tick' },
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            this.props.spanLength * 4
 	                        )
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'tick' },
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            this.props.spanLength * 3
 	                        )
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'tick' },
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            this.props.spanLength * 2
 	                        )
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'tick' },
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            this.props.spanLength * 1
 	                        )
 	                    ),
-	                    React.createElement(
+	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'tick' },
-	                        React.createElement(
+	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            '0'
@@ -30147,7 +30172,7 @@
 	                    )
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'ul',
 	                null,
 	                resultHeader,
@@ -30157,58 +30182,58 @@
 	    }
 	});
 	var Snippet = function Snippet(props) {
-	    return React.createElement(
+	    return _react2.default.createElement(
 	        'div',
 	        { className: 'video-info' },
-	        React.createElement(
+	        _react2.default.createElement(
 	            'a',
 	            { href: "https://www.youtube.com/watch?v=" + props.videoId, target: props.videoId },
-	            React.createElement('img', { src: props.snippet.thumbnails.default.url, alt: props.snippet.title,
+	            _react2.default.createElement('img', { src: props.snippet.thumbnails.default.url, alt: props.snippet.title,
 	                width: props.snippet.thumbnails.default.width,
 	                height: props.snippet.thumbnails.default.height,
 	                title: props.snippet.title })
 	        ),
-	        React.createElement(
+	        _react2.default.createElement(
 	            'div',
 	            null,
-	            React.createElement(
+	            _react2.default.createElement(
 	                'h3',
 	                null,
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'a',
 	                    { href: "https://www.youtube.com/watch?v=" + props.videoId, target: props.videoId },
 	                    props.snippet.title
 	                )
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'p',
 	                null,
 	                props.snippet.description
 	            ),
-	            React.createElement(
+	            _react2.default.createElement(
 	                'div',
 	                null,
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'span',
 	                    null,
 	                    'published by '
 	                ),
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'a',
 	                    { className: 'channel-id', href: "https://www.youtube.com/channel/" + props.snippet.channelId, target: props.snippet.channelId },
 	                    props.snippet.channelTitle
 	                ),
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'span',
 	                    null,
 	                    ' in '
 	                ),
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'span',
 	                    { className: 'publish-date-time' },
 	                    props.snippet.publishedAt.split("T")[0]
 	                ),
-	                React.createElement(
+	                _react2.default.createElement(
 	                    'a',
 	                    { href: '#', onClick: props.onClick, 'data-index': props.data_index },
 	                    props.anchorText
@@ -30220,7 +30245,7 @@
 	
 	var PlayVideo = function PlayVideo(props) {
 	    var url = "//www.youtube.com/embed/" + props.videoId + "?enablejsapi=1";
-	    return React.createElement('iframe', { className: 'player', type: 'text/html', width: '640', height: '390',
+	    return _react2.default.createElement('iframe', { className: 'player', type: 'text/html', width: '640', height: '390',
 	        src: url, frameBorder: '0' });
 	};
 	
@@ -30236,7 +30261,7 @@
 	    };
 	};
 	
-	var Container = connect(mapStateToProps)(Search);
+	var Container = (0, _reactRedux.connect)(mapStateToProps)(Search);
 	
 	exports.Container = Container;
 	exports.Results = Results;

@@ -1,5 +1,7 @@
+"use strict";
+
 var express = require('express');
-var app = new express();
+let app = new express();
 
 app.use(express.static('build'));
 
