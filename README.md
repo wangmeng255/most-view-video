@@ -1,5 +1,5 @@
 # Most View Video
-Thinkful (https://www.thinkful.com/) Portfolio Exercise - a responsive React app to search top 50 viewed videos in YouTube Api. The app also analyzes the results based on published time.
+Portfolio Exercise - a responsive React app to search top 50 viewed videos in YouTube Api. The app also analyzes the results based on published time.
 
 ![Screenshot](https://github.com/wangmeng255/most-view-video/blob/master/img/YouTube-Api.png "Screenshot")
 
